@@ -203,7 +203,7 @@ export function Rooms() {
             <tbody>
               {rooms.map(
                 ({ _id, name, details, lease, tenants }, key) => {
-                  const payment_status = lease ? lease.payment_status : '-----------';
+                  const payment_status = lease ? lease.payment_periods[lease.payment_periods.length - 1].payment_status : '-----------';
                   const PAYMENT_STATUS_COLORS = {
                     'Paid': 'green',
                     'Unpaid': 'yellow',

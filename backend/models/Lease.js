@@ -1,29 +1,51 @@
 const mongoose = require('mongoose');
 
-const LeaseSchema = new mongoose.Schema({
-    // room: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'Room',
-    //     required: true
-    // },
-    // tenants: [{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'User'
-    // }],
+const PaymentPeriodSchema = new mongoose.Schema({
     start_date: {
         type: Date,
-        required: true,
-        default: Date.now
+        required: true
     },
     end_date: {
         type: Date,
-        required: true,
-        default: function () {
-            const oneYearFromNow = new Date();
-            oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
-            return oneYearFromNow;
-        }
+        required: true
     },
+    payment_status: {
+        type: String,
+        enum: ['paid', 'unpaid', 'overdue', 'partially paid'],
+        default: 'unpaid'
+    },
+    rent_amount: {
+        type: Number,
+        required: true
+    },
+    payments_until_paid: {
+        type: Number,
+        required: true
+    }
+});
+
+PaymentPeriodSchema.post('save', async function(next) {
+    if (this.payments_until_paid <= 0) {
+        this.payment_status = 'paid';
+    } else if (this.payments_until_paid < this.rent_amount) {
+        this.payment_status = 'partially paid';
+    } else if ((this.end_date < new Date()) && (this.payments_until_paid > 0)) {
+        this.payment_status = 'overdue';
+    } else {
+        this.payment_status = 'unpaid';
+    }
+    try{
+        const leaseId = this.parent().id;
+        const roomId = this.parent().parent().id;
+        const lease = await LeaseModel.findById(leaseId);
+        lease.payment_status = this.payment_status;
+        await lease.save();
+    } catch (error) {
+        console.error('Error updating lease payment status:', error);
+    }
+});
+
+const LeaseSchema = new mongoose.Schema({
     rent_amount: {
         type: Number,
         required: true
@@ -38,22 +60,26 @@ const LeaseSchema = new mongoose.Schema({
         required: true,
         default: 1
     },
-
+    start_date: {
+        type: Date,
+        required: true,
+        default: Date.now
+    },
+    end_date: {
+        type: Date,
+        required: true,
+        default: function () {
+            const oneYearFromNow = new Date();
+            oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+            return oneYearFromNow;
+        }
+    },
+    payment_periods: [PaymentPeriodSchema],
     payment_status: {
         type: String,
-        enum: ['paid', 'unpaid', 'overdue', 'cancelled', 'refunded'],
+        enum: ['paid', 'unpaid', 'overdue', 'partially paid'],
         default: 'unpaid'
     },
-    // payment_days: {
-    //     type: [Date],
-    //     default: function() {
-    //         return this.getPaymentDates();
-    //     }
-    // },
-    payments: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Payment'
-    }],
 
     created_at: {
         type: Date,
@@ -61,58 +87,47 @@ const LeaseSchema = new mongoose.Schema({
     }
 });
 
-// LeaseSchema.methods.getPaymentDates = function() {
-//     const paymentDates = [];
-//     const currentDate = new Date(this.start_date);
-//     const endDate = new Date(this.end_date);
-//     const frequency = this.payment_frequency;
-
-//     if (frequency === 'one-time') {
-//         paymentDates.push(new Date(endDate));
-//     } else {
-//         while (currentDate < endDate) {
-//             switch (frequency) {
-//                 case 'monthly':
-//                     currentDate.setMonth(currentDate.getMonth() + 1);
-//                     break;
-//                 case 'quarterly':
-//                     currentDate.setMonth(currentDate.getMonth() + 3);
-//                     break;
-//                 case 'semi-annually':
-//                     currentDate.setMonth(currentDate.getMonth() + 6);
-//                     break;
-//                 case 'annually':
-//                     currentDate.setFullYear(currentDate.getFullYear() + 1);
-//                     break;
-//             }
-//             if (currentDate <= endDate) {
-//                 paymentDates.push(new Date(currentDate));
-//             }
-//         }
-//     }
-
-//     return paymentDates;
-// };
-
-// LeaseSchema.pre('validate', function(next) {
-//     if (this.start_date >= this.end_date) {
-//         next(new Error('End date must be after start date.'));
-//     }
-
-//     const numPaymentDates = this.getPaymentDates().length;
-//     if (numPaymentDates < 1) {
-//         next(new Error('Payment frequency does not generate payment dates within the lease period.'));
-//     } else {
-//         next();
-//     }
-// });
-
-LeaseSchema.virtual('current_required_payment').get(function() {
-    const rentAmount = this.rent_amount || 0;
-    const paymentDaysLength = this.payment_days.length || 0;
-    return rentAmount * paymentDaysLength;
+LeaseSchema.pre('save', async function (next) {
+    const lease = this;
+    lease.payment_periods = generatePaymentPeriods(lease);
+    next();
 });
 
-// const LeaseModel = mongoose.model('leases', LeaseSchema);
-// module.exports = LeaseModel;
+function generatePaymentPeriods(lease) {
+    const { rent_amount, start_date, end_date, payment_frequency, num_terms } = lease;
+    const payment_periods = [];
+    const freq = payment_frequency.toLowerCase();
+    let currentDate = new Date(start_date);
+
+    for (let i = 0; i < num_terms; i++) {
+        const start_date = new Date(currentDate);
+        const end_date = new Date(currentDate);
+        switch (freq) {
+            case 'monthly':
+                end_date.setMonth(end_date.getMonth() + 1);
+                break;
+            case 'quarterly':
+                end_date.setMonth(end_date.getMonth() + 3);
+                break;
+            case 'semi-annually':
+                end_date.setMonth(end_date.getMonth() + 6);
+                break;
+            case 'annually':
+                end_date.setFullYear(end_date.getFullYear() + 1);
+                break;
+            default:
+                break;
+        }
+        payment_periods.push({
+            start_date: start_date,
+            end_date: end_date,
+            payment_status: 'unpaid',
+            payments_until_paid: rent_amount,
+            rent_amount: rent_amount
+        });
+        currentDate = new Date(end_date.getTime() + 60 * 60 * 24 * 1000);
+    }
+    return payment_periods;
+}
+
 module.exports = LeaseSchema;
