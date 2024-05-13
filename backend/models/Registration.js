@@ -35,6 +35,10 @@ const RegistrationSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'users'
+    },
     time_interacted: {
         type: Date,
         default: Date.now

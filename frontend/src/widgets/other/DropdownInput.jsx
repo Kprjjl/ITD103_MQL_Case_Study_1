@@ -72,50 +72,6 @@ export function DropdownInput({ listItems, value, setValue, placeholder, label, 
       </Menu>
     </div>
   );
-
-
-  // return (
-  //   <div className="relative flex w-full max-w-[24rem]">
-  //     <Menu placement="bottom-start">
-  //       <MenuHandler>
-  //         <IconButton
-  //           ripple={false}
-  //           color="blue-gray"
-  //           size="regular"
-  //           variant="solid"
-  //           // className="rounded-l-none"
-  //         >
-  //           <ChevronDownIcon className="w-5 h-5" />
-  //         </IconButton>
-  //       </MenuHandler>
-  //       <MenuList className="max-h-[20rem] max-w-[18rem]">
-  //         {listItems.map((item, index) => {
-  //           return (
-  //             <MenuItem
-  //               key={item}
-  //               value={item}
-  //               onClick={() => setValue(index)}
-  //             >
-  //               {item}
-  //             </MenuItem>
-  //           );
-  //         })}
-  //       </MenuList>
-  //     </Menu>
-  //     <Input
-  //       type="tel"
-  //       placeholder={placeholder}
-  //       className="rounded-l-none !border-t-blue-gray-200 focus:!border-t-gray-900"
-  //       labelProps={{
-  //         className: "before:content-none after:content-none",
-  //       }}
-  //       containerProps={{
-  //         className: "min-w-0",
-  //       }}
-  //       value={value}
-  //     />
-  //   </div>
-  // );
 }
 
 DropdownInput.displayName = "/src/widgets/other/DropdownInput.jsx";

@@ -263,17 +263,12 @@ export function Rooms() {
                       </td>
                       <td className={className}>
                         {lease && (
-                          // <Typography
-                          //   as="a"
-                          //   href={"/dashboard/payments}
-                          // >
                           <Chip
                             variant="gradient"
                             color={PAYMENT_STATUS_COLORS[payment_status]}
                             value={payment_status.toUpperCase()}
                             className="py-0.5 px-2 text-[11px] font-medium w-fit"
                           />
-                          // </Typography>
                         )}
                       </td>
                       <td className={className}>

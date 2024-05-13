@@ -40,17 +40,8 @@ const UserSchema = new mongoose.Schema({
         default: null
     },
     occupied_room: {
-        id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Room'
-        },
-        lease: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Lease'
-        },
-        name: {
-            type: String
-        }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'rooms'
     },
 
     usertype: {

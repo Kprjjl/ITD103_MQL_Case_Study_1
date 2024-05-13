@@ -107,26 +107,6 @@ const RoomSchema = new mongoose.Schema({
     }
 });
 
-
-// PaymentPeriodSchema.post('save', async function(doc) {
-//     if (this.payments_until_paid <= 0) {
-//         this.payment_status = 'paid';
-//     } else if (this.payments_until_paid < this.rent_amount) {
-//         this.payment_status = 'partially paid';
-//     } else if ((this.end_date < new Date()) && (this.payments_until_paid > 0)) {
-//         this.payment_status = 'overdue';
-//     } else {
-//         this.payment_status = 'unpaid';
-//     }
-//     try{
-//         const lease = this.parent();
-//         lease.payment_status = this.payment_status;
-//         await lease.save();
-//     } catch (error) {
-//         console.error('Error updating lease payment status:', error);
-//     }
-// });
-
 PaymentPeriodSchema.post('save', async function(doc) {
     try {
         const room = await RoomModel.findOne({ 'lease.payment_periods._id': this._id });

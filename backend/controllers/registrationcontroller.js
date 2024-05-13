@@ -38,7 +38,7 @@ async function approvePendingRegistration(pendingRegistrationId) {
             throw new Error("Pending registration not found");
         }
 
-        await UserModel.create({
+        const user = await UserModel.create({
             firstname: pendingRegistration.firstname,
             lastname: pendingRegistration.lastname,
             username: pendingRegistration.username,
@@ -46,6 +46,7 @@ async function approvePendingRegistration(pendingRegistrationId) {
             password: pendingRegistration.password,
             usertype: pendingRegistration.usertype
         });
+        pendingRegistration.user_id = user._id;
 
         pendingRegistration.status = 'approved';
         await pendingRegistration.save();
