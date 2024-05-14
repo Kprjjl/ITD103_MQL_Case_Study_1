@@ -94,6 +94,7 @@ export const routes = [
         element: <SignUp />,
       },
     ],
+    hidden: true,
   },
 ];
 

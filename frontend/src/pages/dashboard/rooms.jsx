@@ -344,7 +344,7 @@ export function Rooms() {
             </CardHeader>
             <CardBody>
               <form onSubmit={handleUpdateLeaseSubmit}>
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-8">
                   <Input label="Rent Amount" onChange={(e) => setRentAmount(e.target.value)} defaultValue={rent_amount}/>
                   <DropdownInput 
                     listItems={['monthly', 'quarterly', 'semi-annually', 'annually', 'one-time']} 

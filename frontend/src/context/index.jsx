@@ -67,8 +67,6 @@ export function MaterialTailwindControllerProvider({ children }) {
     }
   }, []);
 
-  console.log("first: userType", controller.userType)
-
   return (
     <MaterialTailwind.Provider value={value}>
       {children}

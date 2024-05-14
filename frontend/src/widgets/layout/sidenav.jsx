@@ -18,6 +18,7 @@ export function Sidenav({ brandImg, brandName, routes }) {
     transparent: "bg-transparent",
   };
 
+  routes = routes.filter((route) => !route.hidden);
   if (userType !== "admin") {
     routes = routes.filter((route) => route.title !== "management");
   }
