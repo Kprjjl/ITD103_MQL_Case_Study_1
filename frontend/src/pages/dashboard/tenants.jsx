@@ -142,7 +142,7 @@ export function Tenants() {
                     <tr key={tenant_id}>
                       <td className={className}>
                         <div className="flex items-center gap-4">
-                          <Badge placement="bottom-end" color={status === "online" ? "green" : "blue-gray"}>
+                          <Badge placement="bottom-end" color={status === "online" ? "green" : "blue-gray"} overlap="circular">
                             <Tooltip key={name} content={name}>
                               <Avatar src={profile_img || "/img/profile_pics/default-avatar.jpg"} alt={name} size="sm" variant="rounded" />
                             </Tooltip>

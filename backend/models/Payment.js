@@ -42,14 +42,14 @@ PaymentSchema.post('findOneAndUpdate', async function(result) {
     }
 });
 
-async function updateLeasePaymentStatus(roomId) {
+async function updateLeasePaymentStatus(roomId, amount) {
     console.log("model: ", RoomModel)
     const room = await RoomModel.findById(roomId).exec();
     const lease = room.lease;
     const payment_periods = lease.payment_periods;
     const dateNow = new Date();
     const currentPeriod = payment_periods.find(period => dateNow >= period.start_date && dateNow <= period.end_date);
-    currentPeriod.payments_until_paid -= doc.amount;
+    currentPeriod.payments_until_paid -= amount;
     await currentPeriod.save();
 }
 

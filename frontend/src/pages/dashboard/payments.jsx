@@ -62,6 +62,13 @@ export function Payments() {
     }
   };
 
+  const reset_states = () => {
+    setAmount(null);
+    setPaidBy(null);
+    setRoom(null);
+    setDate(Date.now);
+  };
+
   const handleAddPaymentSubmit = async (e) => { 
     e.preventDefault();
     try {
@@ -72,9 +79,11 @@ export function Payments() {
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
       const newPayment = response.data;
+      console.log("new payment: ", newPayment)
       setPayments(prevPayments => [...prevPayments, newPayment]);
+      reset_states();
       setShowPaymentPopup(0);
-    } catch {
+    } catch (error) {
       console.error("Error adding payment:", error);
     }
   };
@@ -82,11 +91,14 @@ export function Payments() {
   const handleUpdatePaymentSubmit = async (e) => {
     e.preventDefault();
     try {
+      const roomId = room._id;
+      const tenantId = paid_by.id;
       const response = await axios.put("http://localhost:3001/payments" + selectedPaymentID, 
-        { amount, paid_by, room: room, date }, 
+        { amount, paid_by: tenantId, room: roomId, date }, 
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
       const updatedPayment = response.data;
+      console.log("updated payment: ", updatedPayment)
       setPayments(prevPayments => prevPayments.map(payment => payment._id === selectedPaymentID ? updatedPayment : payment));
       setShowPaymentPopup(0);
     } catch (error) {
@@ -115,6 +127,7 @@ export function Payments() {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setTenants(response.data);
+      setPaidBy(null);
       setRoom(room);
     } catch (error) {
       console.error('Error fetching tenants:', error);
@@ -173,8 +186,7 @@ export function Payments() {
             </thead>
             <tbody>
               {payments.map(
-                ({ _id, amount, paid_by, room, date }, key) => {
-                  const user = paid_by;
+                ({ _id, amount: _amount, paid_by: user, room: _room, date: _date }, key) => {
                   const name = `${user.firstname} ${user.lastname}`;
                   const className = `py-3 px-5 ${
                     key === payments.length - 1
@@ -191,22 +203,22 @@ export function Payments() {
                             color="blue-gray"
                             className="font-semibold"
                           >
-                            {format(date, "MM-dd-yy")}
+                            {format(_date, "MM-dd-yy")}
                           </Typography>
                         </div>
                       </td>
                       <td className={className}>
                         <Typography variant="small" color="blue-gray">
-                          {room.name}
+                          {_room.name}
                         </Typography>
                       </td>
                       <td className={className}>
                           <i class="fa-solid fa-peso-sign"></i>
-                          {amount.toLocaleString()}
+                          {_amount.toLocaleString()}
                       </td>
                       <td className={className}>
                         <div className="flex items-center gap-4">
-                          <Badge placement="bottom-end" color={user.status === "online" ? "green" : "blue-gray"}>
+                          <Badge placement="bottom-end" color={user.status === "online" ? "green" : "blue-gray"} overlap="circular" >
                             <Tooltip key={name} content={name}>
                               <Avatar src={user.profile_img || "/img/profile_pics/default-avatar.jpg"} alt={name} size="sm" variant="rounded" />
                             </Tooltip>
@@ -234,10 +246,10 @@ export function Payments() {
                               color="blue-gray"
                               onClick={() => {
                                 setSelectedPaymentID(_id);
-                                setAmount(amount);
-                                setPaidBy(user._id);
-                                setRoom(room._id);
-                                setDate(date);
+                                setAmount(_amount);
+                                setPaidBy(user);
+                                setRoom(_room);
+                                setDate(_date);
                                 fetchRooms();
                                 setShowPaymentPopup(2);
                               }}
@@ -278,20 +290,25 @@ export function Payments() {
                     label="Room"
                     getLabelValue={() => (room ? room.name : "")}
                     setValue={setRoomAndGetTenants}
+                    defaultValue={() => (room ? room.name : "")}
                     listItems={rooms.map(({ ...rest }) => ({value: { ...rest }, label: rest.name}))}
+                    required={true}
                     search={true}
                   />
                   <DropdownInput
                     label="Paid By"
                     getLabelValue={() => (paid_by ? paid_by.username : "")}
                     setValue={setPaidBy}
+                    defaultValue={paid_by ? paid_by.username : ""}
                     listItems={tenants.map(({ ...rest }) => ({value: { ...rest }, label: rest.username}))}
+                    required={true}
                     search={true}
                   />
                   <Input
                     type="number"
                     label="Amount"
                     value={amount}
+                    required={true}
                     onChange={(e) => setAmount(e.target.value)}
                   />
                   <DatePicker
@@ -299,6 +316,7 @@ export function Payments() {
                     date={date}
                     setDate={setDate}
                     onChange={(e) => setDate(e.target.value)}
+                    required
                   />
                 </div>
                 <div className="flex justify-end mt-4">
@@ -307,7 +325,7 @@ export function Payments() {
                     color="green"
                     type="submit"
                   >
-                    Add
+                    {showPaymentPopup === 1 ? "Add" : "Update"}
                   </Button>
                 </div>
               </form>

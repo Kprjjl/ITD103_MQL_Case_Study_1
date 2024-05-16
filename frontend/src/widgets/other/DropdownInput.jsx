@@ -10,7 +10,7 @@ import {
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import { useState, useEffect } from "react";
 
-export function DropdownInput({ listItems, getLabelValue, setValue, placeholder, label, search=false}) {
+export function DropdownInput({ listItems, getLabelValue, setValue, placeholder, label, search=false, defaultValue="", required=false}) {
   const [searchValue, setSearchValue] = useState("");
   const [filteredItems, setFilteredItems] = useState([]);
 
@@ -36,7 +36,9 @@ export function DropdownInput({ listItems, getLabelValue, setValue, placeholder,
               placeholder={placeholder}
               label={label}
               value={getLabelValue()}
+              defaultValue={defaultValue}
               onChange={() => null}
+              required={required}
               icon={<ChevronDownIcon className="w-5 h-5" />}
             />
           </div>

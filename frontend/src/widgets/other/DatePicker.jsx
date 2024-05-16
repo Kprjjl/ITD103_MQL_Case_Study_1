@@ -8,7 +8,7 @@ import {
 import { format } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
-export default function DatePicker({ date, setDate, label="Select a Date", disabled, onBlur }) {
+export default function DatePicker({ date, setDate, label="Select a Date", disabled, onBlur, required }) {
   return (
     <div>
       <Popover placement="bottom">
@@ -21,6 +21,7 @@ export default function DatePicker({ date, setDate, label="Select a Date", disab
               if (onBlur) onBlur(e);
             }}
             value={date ? format(date, "PPP") : ""}
+            required={required}
           />
         </PopoverHandler>
         <PopoverContent>

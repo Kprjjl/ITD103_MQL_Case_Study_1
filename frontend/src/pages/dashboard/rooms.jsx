@@ -347,14 +347,15 @@ export function Rooms() {
             <CardBody>
               <form onSubmit={handleUpdateLeaseSubmit}>
                 <div className="flex flex-col gap-8">
-                  <Input label="Rent Amount" onChange={(e) => setRentAmount(e.target.value)} defaultValue={rent_amount}/>
+                  <Input label="Rent Amount" onChange={(e) => setRentAmount(e.target.value)} defaultValue={rent_amount} required />
                   <DropdownInput 
                     listItems={payment_freq_enum.map((item) => ({ value: item, label: item }))} 
                     getLabelValue={() => payment_frequency}
                     setValue={setPaymentFrequency} 
                     label="Payment Frequency"
+                    required
                   />
-                  <DatePicker date={start_date} setDate={setStartDate} label="Select Start Payment Date" />
+                  <DatePicker date={start_date} setDate={setStartDate} label="Select Start Payment Date" required />
                   <Input 
                     label="Number of Terms"
                     defaultValue={num_terms}
@@ -364,6 +365,7 @@ export function Rooms() {
                         setNumTerms(parseInt(value));
                       }
                     }}
+                    required
                   />
                   <Input label="End Payment Date" value={end_date ? format(end_date, "PPP") : ""} disabled />
                 </div>
