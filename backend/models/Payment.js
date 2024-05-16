@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const RoomModel = require('./Room');
 
 const PaymentSchema = new mongoose.Schema({
     amount: {

@@ -10,13 +10,14 @@ import {
 
   Input,
   Button,
+  Badge,
 } from "@material-tailwind/react";
 import { DocumentTextIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import DatePicker from "../../widgets/other/DatePicker";
 import { DropdownInput } from "../..//widgets/other/DropdownInput";
-
+import { format } from "date-fns";
 import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
 
 export function Payments() {
@@ -51,6 +52,12 @@ export function Payments() {
     payments.sort((a, b) => new Date(b.date) - new Date(a.date));
   }, []);
 
+  // useEffect logger
+  useEffect(() => {
+    console.log("paid_by:", paid_by);
+    console.log("room:", room);
+  }, [paid_by, room]);
+
   const deletePayment = async (id) => {
     try {
       await axios.delete("http://localhost:3001/payments/" + id, {
@@ -66,8 +73,10 @@ export function Payments() {
   const handleAddPaymentSubmit = async (e) => { 
     e.preventDefault();
     try {
+      const roomId = room._id;
+      const tenantId = paid_by.id;
       const response = await axios.post("http://localhost:3001/payments", 
-        { amount, paid_by, room: room, date },
+        { amount, paid_by: tenantId, room: roomId, date },
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
       const newPayment = response.data;
@@ -188,11 +197,16 @@ export function Payments() {
                           <Typography
                             variant="small"
                             color="blue-gray"
-                            className="font-bold"
+                            className="font-semibold"
                           >
-                            {date}
+                            {format(date, "MM-dd-yy")}
                           </Typography>
                         </div>
+                      </td>
+                      <td className={className}>
+                        <Typography variant="small" color="blue-gray">
+                          {room.name}
+                        </Typography>
                       </td>
                       <td className={className}>
                           <i class="fa-solid fa-peso-sign"></i>
@@ -219,11 +233,6 @@ export function Payments() {
                             </Typography>
                           </div>
                         </div>
-                      </td>
-                      <td className={className}>
-                        <Typography variant="small" color="blue-gray">
-                          {room.name}
-                        </Typography>
                       </td>
                       <td className={className}>
                         <div className="flex items-center gap-2">
@@ -295,7 +304,8 @@ export function Payments() {
                   />
                   <DatePicker
                     label="Date"
-                    value={date}
+                    date={date}
+                    setDate={setDate}
                     onChange={(e) => setDate(e.target.value)}
                   />
                 </div>
