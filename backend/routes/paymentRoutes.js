@@ -7,7 +7,6 @@ const PaymentModel = require('../models/Payment');
 router.get('/payments', requireAdmin, async (req, res) => {
     try {
         const payments = await PaymentModel.find({}, '-__v -created_at').populate('paid_by').populate('room');
-        console.log('Payments:', payments)
         res.status(200).json(payments);
     } catch (error) {
         console.error('Error retrieving payments:', error);

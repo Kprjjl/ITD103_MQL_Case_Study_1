@@ -12,19 +12,17 @@ import {
   Button,
   Badge,
 } from "@material-tailwind/react";
-import { DocumentTextIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import DatePicker from "../../widgets/other/DatePicker";
 import { DropdownInput } from "../..//widgets/other/DropdownInput";
 import { format } from "date-fns";
-import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { MagnifyingGlassIcon, PlusIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 
 export function Payments() {
   const [payments, setPayments] = useState([]);
-  const [showAddPaymentPopup, setShowAddPaymentPopup] = useState(false);
+  const [showPaymentPopup, setShowPaymentPopup] = useState(0);  // 0 for hide, 1 for add mode, 2 for update mode
   const [selectedPaymentID, setSelectedPaymentID] = useState(null);
-  const [showUpdatePaymentPopup, setShowUpdatePaymentPopup] = useState(false);
 
   const [amount, setAmount] = useState(null);
   const [paid_by, setPaidBy] = useState(null);
@@ -52,12 +50,6 @@ export function Payments() {
     payments.sort((a, b) => new Date(b.date) - new Date(a.date));
   }, []);
 
-  // useEffect logger
-  useEffect(() => {
-    console.log("paid_by:", paid_by);
-    console.log("room:", room);
-  }, [paid_by, room]);
-
   const deletePayment = async (id) => {
     try {
       await axios.delete("http://localhost:3001/payments/" + id, {
@@ -81,7 +73,7 @@ export function Payments() {
       );
       const newPayment = response.data;
       setPayments(prevPayments => [...prevPayments, newPayment]);
-      setShowAddPaymentPopup(false);
+      setShowPaymentPopup(0);
     } catch {
       console.error("Error adding payment:", error);
     }
@@ -96,7 +88,7 @@ export function Payments() {
       );
       const updatedPayment = response.data;
       setPayments(prevPayments => prevPayments.map(payment => payment._id === selectedPaymentID ? updatedPayment : payment));
-      setShowUpdatePaymentPopup(false);
+      setShowPaymentPopup(0);
     } catch (error) {
       console.error("Error updating payment:", error);
     }
@@ -143,7 +135,7 @@ export function Payments() {
               </Typography>
             </div>
             <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-              <Button className="flex items-center gap-3" size="sm" onClick={() => {setShowAddPaymentPopup(true); fetchRooms()}} >
+              <Button className="flex items-center gap-3" size="sm" onClick={() => {setShowPaymentPopup(1); fetchRooms()}} >
                 <PlusIcon strokeWidth={2} className="h-4 w-4" /> Log New Payment
               </Button>
             </div>
@@ -236,7 +228,7 @@ export function Payments() {
                       </td>
                       <td className={className}>
                         <div className="flex items-center gap-2">
-                          <Tooltip content="Edit lease">
+                          <Tooltip content="Edit payment log details">
                             <IconButton
                               size="sm"
                               color="blue-gray"
@@ -247,13 +239,13 @@ export function Payments() {
                                 setRoom(room._id);
                                 setDate(date);
                                 fetchRooms();
-                                setShowUpdatePaymentPopup(true);
+                                setShowPaymentPopup(2);
                               }}
                             >
-                              <DocumentTextIcon className="h-5 w-5" />
+                              <PencilSquareIcon className="h-5 w-5" />
                             </IconButton>
                           </Tooltip>
-                          <Tooltip content="Delete room">
+                          <Tooltip content="Delete payment log">
                             <IconButton
                               size="sm"
                               color="red"
@@ -273,14 +265,14 @@ export function Payments() {
         </CardBody>
       </Card>
 
-      {showAddPaymentPopup && (
+      {showPaymentPopup !== 0 && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
           <Card className="w-96">
             <CardHeader className="bg-gray-100 p-4" variant="gradient" color="gray">
-              <Typography variant="h6">Add Payment</Typography>
+              <Typography variant="h6">{showPaymentPopup === 1 ? "Add Payment" : "Edit Payment Details"}</Typography>
             </CardHeader>
             <CardBody>
-              <form onSubmit={handleAddPaymentSubmit}>
+              <form onSubmit={(e) => showPaymentPopup === 1 ? handleAddPaymentSubmit(e) : handleUpdatePaymentSubmit(e)}>
                 <div className="flex flex-col gap-8">
                   <DropdownInput
                     label="Room"
@@ -310,60 +302,12 @@ export function Payments() {
                   />
                 </div>
                 <div className="flex justify-end mt-4">
-                  <Button onClick={() => setShowAddPaymentPopup(false)} className="mr-2" type="button">Cancel</Button>
+                  <Button onClick={() => setShowPaymentPopup(0)} className="mr-2" type="button">Cancel</Button>
                   <Button
                     color="green"
                     type="submit"
                   >
                     Add
-                  </Button>
-                </div>
-              </form>
-            </CardBody>
-          </Card>
-        </div>
-      )}
-
-      {showUpdatePaymentPopup && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
-          <Card className="w-96">
-            <CardHeader className="bg-gray-100 p-4" variant="gradient" color="gray">
-              <Typography variant="h6">Update Payment Details</Typography>
-            </CardHeader>
-            <CardBody>
-              <form onSubmit={handleUpdatePaymentSubmit}>
-                <div className="flex flex-col gap-8">
-                  <Input
-                    type="number"
-                    label="Amount"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                  />
-                  <Input
-                    type="text"
-                    label="Paid By"
-                    value={paid_by}
-                    onChange={(e) => setPaidBy(e.target.value)}
-                  />
-                  <Input
-                    type="text"
-                    label="Room"
-                    value={room}
-                    onChange={(e) => setRoom(e.target.value)}
-                  />
-                  <DatePicker
-                    label="Date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                  />
-                </div>
-                <div className="flex justify-end mt-4">
-                  <Button onClick={() => setShowUpdatePaymentPopup(false)} className="mr-2" type="button">Cancel</Button>
-                  <Button
-                    color="green"
-                    type="submit"
-                  >
-                    Update
                   </Button>
                 </div>
               </form>

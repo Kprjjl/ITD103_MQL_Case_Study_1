@@ -11,13 +11,11 @@ import {
   Input,
   Button,
 } from "@material-tailwind/react";
-import { DocumentTextIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import DatePicker from "../../widgets/other/DatePicker";
 import { DropdownInput } from "../..//widgets/other/DropdownInput";
-
-import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { MagnifyingGlassIcon, PlusIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
 import { addMonths, addQuarters, addYears, format } from "date-fns";
 
 export function Rooms() {
