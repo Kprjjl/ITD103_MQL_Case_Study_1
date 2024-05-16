@@ -101,5 +101,18 @@ router.put('/rooms/:id/lease', requireAdmin, async (req, res) => {
     }
 });
 
+router.get('/rooms/:id/tenants', requireAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const room = await RoomModel.findById(id).populate('tenants', '-__v -created_at').exec();
+        if (!room) {
+            return res.status(404).json({ error: 'Room not found' });
+        }
+        res.status(200).json(room.tenants);
+    } catch (error) {
+        console.error('Error retrieving tenants:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 module.exports = router;

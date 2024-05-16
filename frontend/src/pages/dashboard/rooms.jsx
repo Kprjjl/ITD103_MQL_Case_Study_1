@@ -30,6 +30,7 @@ export function Rooms() {
   const [start_date, setStartDate] = useState(Date.now);
   const [num_terms, setNumTerms] = useState(1);
   const [end_date, setEndDate] = useState(null);
+  const payment_freq_enum = ['monthly', 'quarterly', 'semi-annually', 'annually', 'one-time'];
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -258,7 +259,10 @@ export function Rooms() {
                           variant="small"
                           className="text-xs font-medium text-blue-gray-600"
                         >
-                          {(lease && (lease.rent_amount)) || "N/A"}
+                          {(lease && (<>
+                            <i class="fa-solid fa-peso-sign"></i>
+                            {lease.rent_amount.toLocaleString()}</>
+                          )) || "N/A"}
                         </Typography>
                       </td>
                       <td className={className}>
@@ -347,10 +351,10 @@ export function Rooms() {
                 <div className="flex flex-col gap-8">
                   <Input label="Rent Amount" onChange={(e) => setRentAmount(e.target.value)} defaultValue={rent_amount}/>
                   <DropdownInput 
-                    listItems={['monthly', 'quarterly', 'semi-annually', 'annually', 'one-time']} 
-                    value={payment_frequency} 
+                    listItems={payment_freq_enum.map((item) => ({ value: item, label: item }))} 
+                    getLabelValue={() => payment_frequency}
                     setValue={setPaymentFrequency} 
-                    label="Payment Frequency" 
+                    label="Payment Frequency"
                   />
                   <DatePicker date={start_date} setDate={setStartDate} label="Select Start Payment Date" />
                   <Input 

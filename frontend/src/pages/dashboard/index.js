@@ -5,3 +5,4 @@ export * from "@/pages/dashboard/notifications";
 export * from "@/pages/dashboard/rooms";
 export * from "@/pages/dashboard/tenants";
 export * from "@/pages/dashboard/registrations";
+export * from "@/pages/dashboard/payments";

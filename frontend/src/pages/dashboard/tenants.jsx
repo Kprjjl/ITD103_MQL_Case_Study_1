@@ -144,20 +144,11 @@ export function Tenants() {
                         <div className="flex items-center gap-4">
                           <Badge placement="bottom-end" color={status === "online" ? "green" : "blue-gray"}>
                             <Tooltip key={name} content={name}>
-                              <div>
-                                {profile_img && (
-                                    <Avatar src={profile_img} alt={name} size="sm" variant="rounded" />
-                                )}
-                                {!profile_img && (
-                                  <i class="fa-solid fa-user"></i>
-                                )}
-                              </div>
+                              <Avatar src={profile_img || "/img/profile_pics/default-avatar.jpg"} alt={name} size="sm" variant="rounded" />
                             </Tooltip>
                           </Badge>
                           <div>
                             <Typography
-                              as="a"
-                              href="#"
                               variant="small"
                               color="blue-gray"
                               className="font-semibold"
@@ -216,13 +207,6 @@ export function Tenants() {
                         </Typography>
                       </td>
                       <td className={className}>
-                        {/* <Typography
-                          as="a"
-                          href="#"
-                          className="text-xs font-semibold text-blue-gray-600"
-                        >
-                          Edit
-                        </Typography> */}
                         <Tooltip content="Remove Tentant">
                           <IconButton
                             size="sm"

@@ -46,10 +46,24 @@ router.put('/users/:id/room', requireAdmin, async (req, res) => {
         if (!room){
             return res.status(400).json({ error: 'Room not found' });
         }
-        const user = await UserModel.findByIdAndUpdate(id, { occupied_room: roomId }, { new: true, fields: '-password -usertype -created_at -__v' });
+        const user = await UserModel.findById(id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        if (user.occupied_room) {
+            const previousRoom = await RoomModel.findById(user.occupied_room);
+            if (previousRoom) {
+                previousRoom.tenants = previousRoom.tenants.filter(tenant => tenant.id.toString() !== id);
+                await previousRoom.save();
+            }
+        }
+
+        const updatedUser = await UserModel
+            .findByIdAndUpdate(id, { occupied_room: roomId }, { new: true, fields: '-password -usertype -created_at -__v' });
         room.tenants.push({ id: id, username: user.username, profile_img: user.profile_img });
         await room.save();
-        res.status(200).json(user);
+        res.status(200).json(updatedUser);
     } catch (error) {
         console.error('Error updating user room:', error);
         res.status(500).json({ error: 'Internal server error' });

@@ -9,8 +9,9 @@ import {
   DocumentMagnifyingGlassIcon,
   ServerStackIcon,
   RectangleStackIcon,
+  WalletIcon,
 } from "@heroicons/react/24/solid";
-import { Home, Profile, Tables, Notifications, Rooms, Tenants, Registrations } from "@/pages/dashboard";
+import { Home, Profile, Tables, Notifications, Rooms, Tenants, Registrations, Payments } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
 
 const icon = {
@@ -62,6 +63,12 @@ export const routes = [
         name: "Tenants",
         path: "/tenants",
         element: <Tenants />,
+      },
+      {
+        icon: <WalletIcon {...icon} />,
+        name: "Payments",
+        path: "/payments",
+        element: <Payments />,
       },
       {
         icon: <DocumentMagnifyingGlassIcon {...icon} />,

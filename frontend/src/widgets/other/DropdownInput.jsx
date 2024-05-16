@@ -8,66 +8,64 @@ import {
   IconButton,
 } from "@material-tailwind/react";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
+import { useState, useEffect } from "react";
 
-export function DropdownInput({ listItems, value, setValue, placeholder, label, chevronPosition="end" }) {
+export function DropdownInput({ listItems, getLabelValue, setValue, placeholder, label, search=false}) {
+  const [searchValue, setSearchValue] = useState("");
+  const [filteredItems, setFilteredItems] = useState([]);
+
+  useEffect(() => {
+    const filterItems = () => {
+      const filtered = search
+        ? listItems.filter(item =>
+          item.label.toLowerCase().includes(searchValue.toLowerCase())
+        )
+        : listItems;
+      setFilteredItems(filtered);
+    };
+
+    filterItems();
+  }, [searchValue, listItems, search]);
+
   return (
     <div>
       <Menu placement="bottom-end">
         <MenuHandler>
-        <div className="relative flex w-full max-w-[24rem]">
-          {chevronPosition === "start" && (
-            <>
-            <IconButton
-              ripple={false}
-              color="blue-gray"
-              size="regular"
-              variant="text"
-            >
-              {/* chevrondownicon with blue-gray color */}
-              <ChevronDownIcon className="w-5 h-5" />
-            </IconButton>
+          <div className="relative flex w-full max-w-[24rem]">
             <Input
               placeholder={placeholder}
               label={label}
-              value={value}
+              value={getLabelValue()}
               onChange={() => null}
+              icon={<ChevronDownIcon className="w-5 h-5" />}
             />
-            </>
-          )}
-          {chevronPosition === "end" && (
-            <>
-            <Input
-              placeholder={placeholder}
-              label={label}
-              value={value}
-              onChange={() => null}
-            />
-            <IconButton
-              ripple={false}
-              color="blue-gray"
-              size="regular"
-              variant="text"
-            >
-              {/* chevrondownicon with blue-gray color */}
-              <ChevronDownIcon className="w-5 h-5" />
-            </IconButton>
-            </>
-          )}
-          
           </div>
         </MenuHandler>
-        <MenuList className="max-h-[20rem] max-w-[18rem]">
-          {listItems.map((item, index) => {
+        <MenuList className="max-h-[20rem] max-w-[18rem]"><>
+          {search && (
+            <Input
+              label="Search"
+              containerProps={{ className: "mb-4" }}
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
+          )}
+          {filteredItems.length === 0 && (
+            <MenuItem disabled>
+              No applicable items found
+            </MenuItem>
+          )}
+          {filteredItems.map((item, index) => {
             return (
               <MenuItem
-                key={item}
-                value={item}
-                onClick={() => setValue(item)}
+                key={index}
+                value={item.value}
+                onClick={() => setValue(item.value)}
               >
-                {item}
+                {item.label}
               </MenuItem>
             );
-          })}
+          })}</>
         </MenuList>
       </Menu>
     </div>
