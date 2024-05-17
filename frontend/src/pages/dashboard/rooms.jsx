@@ -17,8 +17,11 @@ import DatePicker from "../../widgets/other/DatePicker";
 import { DropdownInput } from "../..//widgets/other/DropdownInput";
 import { MagnifyingGlassIcon, PlusIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
 import { addMonths, addQuarters, addYears, format } from "date-fns";
+import { useMaterialTailwindController, setPopupActive } from "@/context";
+import { fetchRooms } from "@/data";
 
 export function Rooms() {
+  const [controller, dispatch] = useMaterialTailwindController();
   const [rooms, setRooms] = useState([]);
   const [showAddRoomPopup, setShowAddRoomPopup] = useState(false);
   const [selectedRoomID, setSelectedRoomID] = useState(null);
@@ -31,21 +34,9 @@ export function Rooms() {
   const payment_freq_enum = ['monthly', 'quarterly', 'semi-annually', 'annually', 'one-time'];
 
   useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        const response = await axios.get("http://localhost:3001/rooms", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setRooms(response.data);
-      }
-      catch (error) {
-        console.error("Error fetching rooms:", error);
-      }
-    };
-
-    fetchRooms();
+    fetchRooms().then((data) => {
+      setRooms(data);
+    });
   }, []);
 
   useEffect(() => {
@@ -94,6 +85,7 @@ export function Rooms() {
       const newRoom = response.data.room;
       setRooms(prevRooms => [...prevRooms, newRoom]);
       setShowAddRoomPopup(false);
+      setPopupActive(dispatch, false);
     }
     catch (error) {
       console.error("Error adding room:", error);
@@ -117,6 +109,7 @@ export function Rooms() {
       const updatedRoom = response.data.room;
       setRooms(prevRooms => prevRooms.map(room => room._id === selectedRoomID ? updatedRoom : room));
       setShowUpdateLeasePopup(false);
+      setPopupActive(dispatch, false);
     }
     catch (error) {
       console.error("Error updating lease:", error);
@@ -163,7 +156,7 @@ export function Rooms() {
             </Typography>
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-            <Button className="flex items-center gap-3" size="sm" onClick={() => setShowAddRoomPopup(true)} >
+            <Button className="flex items-center gap-3" size="sm" onClick={() => {setShowAddRoomPopup(true); setPopupActive(dispatch, true);}} >
               <PlusIcon strokeWidth={2} className="h-4 w-4" /> Add room
             </Button>
           </div>
@@ -238,12 +231,18 @@ export function Rooms() {
                         </div>
                       </td>
                       <td className={className}>
-                        {tenants.map(({ id, username, profile_img }, key) => (
+                        {tenants.length === 0 && (
+                          <Typography
+                            variant="small"
+                            className="text-s font-medium text-blue-gray-600"
+                          > VACANT </Typography>
+                        )}
+                        {tenants && tenants.map(({ id, username, profile_img }, key) => (
                           <Tooltip key={id} content={username}>
                             <Avatar
                               src={profile_img || "/img/profile_pics/default-avatar.jpg"}
                               alt={username}
-                              size="xs"
+                              size={tenants.length > 1 ? "xs" : "sm"}
                               variant="circular"
                               className={`cursor-pointer border-2 border-white ${
                                 key === 0 ? "" : "-ml-2.5"
@@ -255,11 +254,10 @@ export function Rooms() {
                       <td className={className}>
                         <Typography
                           variant="small"
-                          className="text-xs font-medium text-blue-gray-600"
+                          className="text-s font-medium text-blue-gray-600"
                         >
-                          {(lease && (<>
-                            <i class="fa-solid fa-peso-sign"></i>
-                            {lease.rent_amount.toLocaleString()}</>
+                          {(lease && (
+                            <>{"₱" + lease.rent_amount.toLocaleString()}</>
                           )) || "N/A"}
                         </Typography>
                       </td>
@@ -289,6 +287,7 @@ export function Rooms() {
                                   setEndDate(lease.end_date);
                                 }
                                 setShowUpdateLeasePopup(true);
+                                setPopupActive(dispatch, true);
                               }}
                             >
                               <DocumentTextIcon className="h-5 w-5" />
@@ -324,7 +323,7 @@ export function Rooms() {
               <form onSubmit={handleAddRoomSubmit}>
                 <Input label="Room Name" name="name"/>
                 <div className="flex justify-end mt-4">
-                  <Button onClick={() => setShowAddRoomPopup(false)} className="mr-2" type="button">Cancel</Button>
+                  <Button onClick={() => {setShowAddRoomPopup(false); setPopupActive(dispatch, false);}} className="mr-2" type="button">Cancel</Button>
                   <Button
                     color="green"
                     type="submit"
@@ -370,7 +369,7 @@ export function Rooms() {
                   <Input label="End Payment Date" value={end_date ? format(end_date, "PPP") : ""} disabled />
                 </div>
                 <div className="flex justify-end mt-4">
-                  <Button onClick={() => setShowUpdateLeasePopup(false)} className="mr-2" type="button">Cancel</Button>
+                  <Button onClick={() => {setShowUpdateLeasePopup(false); setPopupActive(dispatch, false);}} className="mr-2" type="button">Cancel</Button>
                   <Button
                     color="green"
                     type="submit"

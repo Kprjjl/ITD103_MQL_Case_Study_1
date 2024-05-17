@@ -18,8 +18,10 @@ import DatePicker from "../../widgets/other/DatePicker";
 import { DropdownInput } from "../..//widgets/other/DropdownInput";
 import { format } from "date-fns";
 import { MagnifyingGlassIcon, PlusIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import { useMaterialTailwindController, setPopupActive } from "@/context";
 
 export function Payments() {
+  const [controller, dispatch] = useMaterialTailwindController();
   const [payments, setPayments] = useState([]);
   const [showPaymentPopup, setShowPaymentPopup] = useState(0);  // 0 for hide, 1 for add mode, 2 for update mode
   const [selectedPaymentID, setSelectedPaymentID] = useState(null);
@@ -83,6 +85,7 @@ export function Payments() {
       setPayments(prevPayments => [...prevPayments, newPayment]);
       reset_states();
       setShowPaymentPopup(0);
+      setPopupActive(dispatch, false);
     } catch (error) {
       console.error("Error adding payment:", error);
     }
@@ -101,6 +104,7 @@ export function Payments() {
       console.log("updated payment: ", updatedPayment)
       setPayments(prevPayments => prevPayments.map(payment => payment._id === selectedPaymentID ? updatedPayment : payment));
       setShowPaymentPopup(0);
+      setPopupActive(dispatch, false);
     } catch (error) {
       console.error("Error updating payment:", error);
     }
@@ -148,7 +152,7 @@ export function Payments() {
               </Typography>
             </div>
             <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-              <Button className="flex items-center gap-3" size="sm" onClick={() => {setShowPaymentPopup(1); fetchRooms()}} >
+              <Button className="flex items-center gap-3" size="sm" onClick={() => {setShowPaymentPopup(1); fetchRooms(); setPopupActive(dispatch, true);}} >
                 <PlusIcon strokeWidth={2} className="h-4 w-4" /> Log New Payment
               </Button>
             </div>
@@ -201,20 +205,21 @@ export function Payments() {
                           <Typography
                             variant="small"
                             color="blue-gray"
-                            className="font-semibold"
+                            className="text-s font-medium text-blue-gray-600"
                           >
                             {format(_date, "MM-dd-yy")}
                           </Typography>
                         </div>
                       </td>
                       <td className={className}>
-                        <Typography variant="small" color="blue-gray">
+                        <Typography variant="small" color="blue-gray" className="text-ss font-medium text-blue-gray-600">
                           {_room.name}
                         </Typography>
                       </td>
                       <td className={className}>
-                          <i class="fa-solid fa-peso-sign"></i>
-                          {_amount.toLocaleString()}
+                          <Typography variant="small" color="blue-gray" className="text-s font-medium text-blue-gray-600">
+                            {"₱" + _amount.toLocaleString()}
+                          </Typography>
                       </td>
                       <td className={className}>
                         <div className="flex items-center gap-4">
@@ -252,6 +257,7 @@ export function Payments() {
                                 setDate(_date);
                                 fetchRooms();
                                 setShowPaymentPopup(2);
+                                setPopupActive(dispatch, true);
                               }}
                             >
                               <PencilSquareIcon className="h-5 w-5" />
@@ -320,7 +326,7 @@ export function Payments() {
                   />
                 </div>
                 <div className="flex justify-end mt-4">
-                  <Button onClick={() => setShowPaymentPopup(0)} className="mr-2" type="button">Cancel</Button>
+                  <Button onClick={() => {setShowPaymentPopup(0); setPopupActive(dispatch, false);}} className="mr-2" type="button">Cancel</Button>
                   <Button
                     color="green"
                     type="submit"

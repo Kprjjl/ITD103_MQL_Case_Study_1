@@ -31,6 +31,9 @@ export function reducer(state, action) {
     case "LOGOUT": {
       return { ...state, userType: null};
     }
+    case "POPUP_ACTIVE": {
+      return { ...state, popupOpen: action.value };
+    }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);
     }
@@ -46,6 +49,7 @@ export function MaterialTailwindControllerProvider({ children }) {
     fixedNavbar: false,
     openConfigurator: false,
     userType: null,
+    popupOpen: false,
   };
 
   const [controller, dispatch] = React.useReducer(reducer, initialState);
@@ -108,3 +112,5 @@ export const loginUser = (dispatch, value) =>
   dispatch({ type: "LOGIN", value })
 export const logoutUser = (dispatch) =>
   dispatch({ type: "LOGOUT" });
+export const setPopupActive = (dispatch, value) =>
+  dispatch({ type: "POPUP_ACTIVE", value });

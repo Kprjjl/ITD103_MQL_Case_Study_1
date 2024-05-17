@@ -6,8 +6,7 @@ import {
   Chip,
   IconButton,
 } from "@material-tailwind/react";
-import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
-import { authorsTableData, projectsTableData } from "@/data";
+import { fetchRegistrations } from "@/data";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -15,20 +14,9 @@ export function Registrations() {
   const [registrations, setRegistrations] = useState([]);
 
   useEffect(() => {
-    const fetchRegistrations = async () => {
-      try {
-        const response = await axios.get("http://localhost:3001/registrations", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setRegistrations(response.data);
-      } catch (error) {
-        console.error("Error fetching registrations:", error);
-      }
-    };
-
-    fetchRegistrations();
+    fetchRegistrations().then((data) => {
+      setRegistrations(data);
+    });
   }, []);
 
   const approveRegistration = async (id) => {

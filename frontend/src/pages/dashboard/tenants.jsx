@@ -17,6 +17,7 @@ import {
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { fetchTenants, fetchRooms } from "@/data";
 
 export function Tenants() {
   const [tenants, setTenants] = useState([]);
@@ -24,36 +25,13 @@ export function Tenants() {
   const [rooms, setRooms] = useState([]);
 
   useEffect(() => {
-    const fetchTenants = async () => {
-      try {
-        const response = await axios.get("http://localhost:3001/users", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setTenants(response.data);
-      } catch (error) {
-        console.error("Error fetching tenants:", error);
-      }
-    };
+    fetchTenants().then((data) => {
+      setTenants(data);
+    });
 
-    fetchTenants();
-
-    const fetchRooms = async () => {
-      try {
-        const response = await axios.get("http://localhost:3001/rooms", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setRooms(response.data);
-      }
-      catch (error) {
-        console.error("Error fetching rooms:", error);
-      }
-    };
-
-    fetchRooms();
+    fetchRooms().then((data) => {
+      setRooms(data);
+    });
   }, []);
 
   const handleRoomChoice = (tenantId, roomId) => {
