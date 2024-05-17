@@ -27,6 +27,7 @@ export class PieChart extends Component {
         colors: this.props.colors,
         legend: {
           show: this.props.showLegend,
+          position: this.props.legendPosition,
         },
         labels: this.props.labels,
       },

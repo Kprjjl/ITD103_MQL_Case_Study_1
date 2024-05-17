@@ -88,64 +88,31 @@ export const getRoomPaymentStatusPieChartData = async () => {
     ],
     colors: ["#10B981", "#6B7280", "#F59E0B", "#EF4444"],
   };
-}
+};
 
 export const getPaymentsChartData = async () => {
   const paymentsPerMonth = await fetchPaymentsPerMonth();
   const paymentsPerYear = await fetchPaymentsPerYear();
+
   const monthLabels = [
     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
   ];
+  
   const currentYear = new Date().getFullYear();
   const yearLabels = Array.from({ length: 5 }, (_, index) => currentYear - 4 + index);
 
-  return [
-    {
-      color: "white",
+  return {
+    perMonth: {
+      labels: monthLabels,
+      data: paymentsPerMonth,
       title: "Payments Per Month",
-      chart: {
-        type: "line",
-        height: 220,
-        series: paymentsPerMonth,
-        options: {
-          ...chartsConfig,
-          colors:["#10B981"],
-          stroke: {
-            lineCap: "round",
-          },
-          markers: {
-            size: 5,
-          },
-          xaxis: {
-            ...chartsConfig.xaxis,
-            categories: monthLabels,
-          },
-        }
-      }
     },
-    {
-      color: "white",
+    perYear: {
+      labels: yearLabels,
+      data: paymentsPerYear,
       title: "Payments Per Year",
-      chart: {
-        type: "line",
-        height: 220,
-        series: paymentsPerYear,
-        options: {
-          ...chartsConfig,
-          colors:["#10B981"],
-          stroke: {
-            lineCap: "round",
-          },
-          markers: {
-            size: 5,
-          },
-          xaxis: {
-            ...chartsConfig.xaxis,
-            categories: yearLabels,
-          },
-        }
-      }
-    },
-  ]
-}
+    }
+  };
+};
+

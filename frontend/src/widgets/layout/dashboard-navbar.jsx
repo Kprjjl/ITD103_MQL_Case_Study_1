@@ -11,6 +11,7 @@ import {
   MenuList,
   MenuItem,
   Avatar,
+  Tooltip,
 } from "@material-tailwind/react";
 import {
   UserCircleIcon,
@@ -207,9 +208,11 @@ export function DashboardNavbar() {
           >
             <Cog6ToothIcon className="h-5 w-5 text-blue-gray-500" />
           </IconButton>
-          <IconButton variant="text" color="blue-gray" onClick={ handleLogout }>
-            <i class="fa-solid fa-right-from-bracket text-blue-gray-500"></i>
-          </IconButton>
+          <Tooltip content="Logout">
+            <IconButton variant="text" color="blue-gray" onClick={ handleLogout }>
+              <i class="fa-solid fa-right-from-bracket text-blue-gray-500"></i>
+            </IconButton>
+          </Tooltip>
         </div>
       </div>
     </Navbar>

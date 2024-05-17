@@ -28,6 +28,8 @@ import {
 import { CheckCircleIcon, ClockIcon } from "@heroicons/react/24/solid";
 import { useState, useEffect } from "react";
 import { getStatisticsCardsData, getRoomPaymentStatusPieChartData, getPaymentsChartData } from "@/controllers/dashboard-controller";
+import HighchartsReact from 'highcharts-react-official';
+import Highcharts from 'highcharts';
 
 export function Home() {
   const [statisticsCardsData, setStatisticsCardsData] = useState([]);
@@ -77,16 +79,77 @@ export function Home() {
             height={400}
             colors={roomPaymentStatusPieChartData.colors}
             showLegend={true}
+            legendPosition="bottom"
             title="Room Payment Statuses"
             labels={roomPaymentStatusPieChartData.labels}
           />
         )}
-        {paymentChartsData.map((props) => (
+        {paymentChartsData.perMonth && (
+          <Card className="border border-blue-gray-100 shadow-sm">
+            <CardHeader floated={false} shadow={false} color="transparent" className="m-0 p-6">
+              <Typography variant="h6" color="blue-gray" className="mb-2">
+                {paymentChartsData.perMonth.title}
+              </Typography>
+            </CardHeader>
+            <CardBody className="pt-0">
+              <HighchartsReact
+                highcharts={Highcharts}
+                options={{
+                  chart: {
+                    type: 'line'
+                  },
+                  title: {
+                    text: paymentChartsData.perMonth.title
+                  },
+                  xAxis: {
+                    categories: paymentChartsData.perMonth.labels
+                  },
+                  series: [{
+                    name: 'Payments',
+                    data: paymentChartsData.perMonth.data,
+                    color: "#10B981"
+                  }]
+                }}
+              />
+            </CardBody>
+          </Card>
+        )}
+        {paymentChartsData.perYear && (
+          <Card className="border border-blue-gray-100 shadow-sm">
+            <CardHeader floated={false} shadow={false} color="transparent" className="m-0 p-6">
+              <Typography variant="h6" color="blue-gray" className="mb-2">
+                {paymentChartsData.perYear.title}
+              </Typography>
+            </CardHeader>
+            <CardBody className="pt-0">
+              <HighchartsReact
+                highcharts={Highcharts}
+                options={{
+                  chart: {
+                    type: 'line'
+                  },
+                  title: {
+                    text: paymentChartsData.perYear.title
+                  },
+                  xAxis: {
+                    categories: paymentChartsData.perYear.labels
+                  },
+                  series: [{
+                    name: 'Payments',
+                    data: paymentChartsData.perYear.data,
+                    color: "#10B981"
+                  }]
+                }}
+              />
+            </CardBody>
+          </Card>
+        )}
+        {/* {paymentChartsData.map((props) => (
           <StatisticsChart
             key={props.title}
             {...props}
           />
-        ))}
+        ))} */}
       </div>
       <div className="mb-4 grid grid-cols-1 gap-6 xl:grid-cols-3">
         <Card className="overflow-hidden xl:col-span-2 border border-blue-gray-100 shadow-sm">
