@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 export function DropdownInput({ listItems, getLabelValue, setValue, placeholder, label, search=false, defaultValue="", required=false}) {
   const [searchValue, setSearchValue] = useState("");
   const [filteredItems, setFilteredItems] = useState([]);
+  const [openMenu, setOpenMenu] = useState(false);
 
   useEffect(() => {
     const filterItems = () => {
@@ -29,7 +30,7 @@ export function DropdownInput({ listItems, getLabelValue, setValue, placeholder,
 
   return (
     <div>
-      <Menu placement="bottom-end">
+      <Menu placement="bottom-end" open={openMenu} handler={setOpenMenu}>
         <MenuHandler>
           <div className="relative flex w-full max-w-[24rem]">
             <Input
@@ -39,7 +40,7 @@ export function DropdownInput({ listItems, getLabelValue, setValue, placeholder,
               defaultValue={defaultValue}
               onChange={() => null}
               required={required}
-              icon={<ChevronDownIcon className="w-5 h-5" />}
+              icon={<ChevronDownIcon className={`w-5 h-5 transition-transform ${openMenu ? "rotate-180" : ""}`} />}
             />
           </div>
         </MenuHandler>
@@ -62,7 +63,7 @@ export function DropdownInput({ listItems, getLabelValue, setValue, placeholder,
               <MenuItem
                 key={index}
                 value={item.value}
-                onClick={() => setValue(item.value)}
+                onClick={() => {setValue(item.value); setOpenMenu(false);}}
               >
                 {item.label}
               </MenuItem>
