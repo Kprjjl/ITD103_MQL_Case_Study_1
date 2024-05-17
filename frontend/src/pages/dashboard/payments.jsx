@@ -211,9 +211,11 @@ export function Payments() {
                         </div>
                       </td>
                       <td className={className}>
-                        <Typography variant="small" color="blue-gray" className="text-ss font-medium text-blue-gray-600">
-                          {_room.name}
-                        </Typography>
+                        {room && (
+                          <Typography variant="small" color="blue-gray" className="text-ss font-medium text-blue-gray-600">
+                            {_room.name}
+                          </Typography>
+                        )}
                       </td>
                       <td className={className}>
                           <Typography variant="small" color="blue-gray" className="text-s font-medium text-blue-gray-600">

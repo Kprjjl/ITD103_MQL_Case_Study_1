@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { requireAdmin } = require('../middlewares/auth');
 const RoomModel = require('../models/Room');
+const { generatePaymentPeriods } = require('../utils/leaseUtils');
 
 router.get('/rooms', requireAdmin, async (req, res) => {
     try {
@@ -93,6 +94,7 @@ router.put('/rooms/:id/lease', requireAdmin, async (req, res) => {
         if (num_terms) {
             room.lease.num_terms = num_terms;
         }
+        room.lease.payment_periods = generatePaymentPeriods(room.lease);
         await room.save();
         res.status(200).json({ message: 'Room lease updated successfully', room });
     } catch (error) {

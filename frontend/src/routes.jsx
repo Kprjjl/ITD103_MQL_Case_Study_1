@@ -34,18 +34,12 @@ export const routes = [
         path: "/profile",
         element: <Profile />,
       },
-      {
-        icon: <InformationCircleIcon {...icon} />,
-        name: "notifications",
-        path: "/notifications",
-        element: <Notifications />,
-      },
-      {
-        icon: <WrenchScrewdriverIcon {...icon} />,
-        name: "maintenance",
-        path: "/maintenance",
-        // element: <Maintenance />,
-      },
+      // {
+      //   icon: <WrenchScrewdriverIcon {...icon} />,
+      //   name: "maintenance",
+      //   path: "/maintenance",
+      //   // element: <Maintenance />,
+      // },
     ],
   },
   {

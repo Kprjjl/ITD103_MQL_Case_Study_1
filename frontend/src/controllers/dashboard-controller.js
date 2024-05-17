@@ -14,7 +14,6 @@ import {
   fetchPaymentsPerMonth,
   fetchPaymentsPerYear,
 } from "@/data";
-import { chartsConfig } from "@/configs";
 
 export const getStatisticsCardsData = async () => {
   const registrations = await fetchRegistrations();

@@ -197,9 +197,9 @@ export function Rooms() {
                 ({ _id, name, details, lease, tenants }, key) => {
                   const payment_status = lease ? lease.payment_status : '-----------';
                   const PAYMENT_STATUS_COLORS = {
-                    'Paid': 'green',
+                    'paid': 'green',
                     'unpaid': 'blue-gray-800',
-                    'Overdue': 'red',
+                    'overdue': 'red',
                     'partially paid': 'blue-gray'
                   };
                   const className = `py-3 px-5 ${
