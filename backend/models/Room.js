@@ -23,7 +23,7 @@ const PaymentPeriodSchema = new mongoose.Schema({
     payments_until_paid: {
         type: Number,
         required: true
-    }
+    },
 });
 
 
@@ -107,31 +107,92 @@ const RoomSchema = new mongoose.Schema({
     }
 });
 
-PaymentPeriodSchema.post('save', async function(doc) {
-    try {
-        const room = await RoomModel.findOne({ 'lease.payment_periods._id': this._id });
-        if (!room) {
-            throw new Error('Room not found');
-        }
-        const lease = room.lease;
+// RoomSchema.pre('save', async function (next) {
+//     if (!this.lease) {
+//         return next();
+//     }
+//     let carry_over = 0;
+//     for (let i = 0; i < this.lease.payment_periods.length; i++) {
+//         if (carry_over > 0) {
+//             this.lease.payment_periods[i].payments_until_paid += carry_over;
+//             carry_over = 0;
+//         }
 
-        let paymentStatus;
-        if (this.payments_until_paid <= 0) {
-            paymentStatus = 'paid';
-        } else if (this.payments_until_paid < this.rent_amount) {
-            paymentStatus = 'partially paid';
-        } else if (this.end_date < new Date()) {
-            paymentStatus = 'overdue';
-        } else {
-            paymentStatus = 'unpaid';
-        }
+//         if (this.lease.payment_periods[i].payments_until_paid <= 0) {
+//             this.lease.payment_periods[i].payment_status = 'paid';
+//             if (this.lease.payment_periods[i].payments_until_paid < 0) {
+//                 carry_over = Math.abs(this.lease.payment_periods[i].payments_until_paid);
+//                 this.lease.payment_periods[i].payments_until_paid = 0;
+//             }
+//         } else if (this.lease.payment_periods[i].payments_until_paid < this.lease.payment_periods[i].rent_amount) {
+//             this.lease.payment_periods[i].payment_status = 'partially paid';
+//         }
+//         if (this.lease.payment_periods[i].end_date < new Date()) {
+//             this.lease.payment_periods[i].payment_status = 'overdue';
+//         }
+//     }
+//     console.log("this.lease.payment_periods", this.lease.payment_periods)
+//     next();
+// });
 
-        lease.payment_status = paymentStatus;
-        await lease.save();
-    } catch (error) {
-        console.error('Error updating lease payment status:', error);
-    }
-});
+// RoomSchema.post('findByIdAndUpdate', async function (result) {
+//     const room = result;
+//     if (!room.lease) {
+//         return;
+//     }
+//     let carry_over = 0;
+//     for (let i = 0; i < room.lease.payment_periods.length; i++) {
+//         if (carry_over > 0) {
+//             room.lease.payment_periods[i].payments_until_paid += carry_over;
+//             carry_over = 0;
+//         }
+//         if (room.lease.payment_periods[i].payments_until_paid < room.lease.payment_periods[i].rent_amount) {
+//             console.log("true")
+//         }
+//         if (room.lease.payment_periods[i].payments_until_paid <= 0) {
+//             room.lease.payment_periods[i].payment_status = 'paid';
+//             if (room.lease.payment_periods[i].payments_until_paid < 0) {
+//                 carry_over = Math.abs(room.lease.payment_periods[i].payments_until_paid);
+//                 room.lease.payment_periods[i].payments_until_paid = 0;
+//             }
+//         } else if (room.lease.payment_periods[i].payments_until_paid < room.lease.payment_periods[i].rent_amount) {
+//             room.lease.payment_periods[i].payment_status = 'partially paid';
+//         }
+//         if (room.lease.payment_periods[i].end_date < new Date()) {
+//             room.lease.payment_periods[i].payment_status = 'overdue';
+//         }
+//     }
+//     console.log("room.lease.payment_periods", room.lease.payment_periods)
+//     await room.save();
+// });
+
+// RoomSchema.pre('save', async function (next) {
+//     const room = this;
+//     // if (!room.lease) {
+//     //     return next();
+//     // }
+//     let carry_over = 0;
+//     for (let i = 0; i < room.lease.payment_periods.length; i++) {
+//         if (carry_over > 0) {
+//             room.lease.payment_periods[i].payments_until_paid += carry_over;
+//             carry_over = 0;
+//         }
+
+//         if (room.lease.payment_periods[i].payments_until_paid <= 0) {
+//             room.lease.payment_periods[i].payment_status = 'paid';
+//             if (room.lease.payment_periods[i].payments_until_paid < 0) {
+//                 carry_over = Math.abs(room.lease.payment_periods[i].payments_until_paid);
+//                 room.lease.payment_periods[i].payments_until_paid = 0;
+//             }
+//         } else if (room.lease.payment_periods[i].payments_until_paid < room.lease.payment_periods[i].rent_amount) {
+//             room.lease.payment_periods[i].payment_status = 'partially paid';
+//         }
+//         if (room.lease.payment_periods[i].end_date < new Date()) {
+//             room.lease.payment_periods[i].payment_status = 'overdue';
+//         }
+//     }
+//     next();
+// });
 
 const RoomModel = mongoose.model('rooms', RoomSchema);
 module.exports = RoomModel;

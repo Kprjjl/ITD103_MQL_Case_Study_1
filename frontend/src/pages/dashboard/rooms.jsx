@@ -195,13 +195,12 @@ export function Rooms() {
             <tbody>
               {rooms.map(
                 ({ _id, name, details, lease, tenants }, key) => {
-                  const payment_status = lease ? lease.payment_periods[lease.payment_periods.length - 1].payment_status : '-----------';
+                  const payment_status = lease ? lease.payment_status : '-----------';
                   const PAYMENT_STATUS_COLORS = {
                     'Paid': 'green',
-                    'Unpaid': 'yellow',
+                    'unpaid': 'blue-gray-800',
                     'Overdue': 'red',
-                    'Cancelled': 'gray',
-                    'Refunded': 'blue'
+                    'partially paid': 'blue-gray'
                   };
                   const className = `py-3 px-5 ${
                     key === rooms.length - 1
@@ -262,7 +261,7 @@ export function Rooms() {
                         </Typography>
                       </td>
                       <td className={className}>
-                        {lease && (
+                        {lease && tenants && (
                           <Chip
                             variant="gradient"
                             color={PAYMENT_STATUS_COLORS[payment_status]}

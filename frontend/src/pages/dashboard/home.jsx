@@ -28,7 +28,6 @@ import {
 import { CheckCircleIcon, ClockIcon } from "@heroicons/react/24/solid";
 import { useState, useEffect } from "react";
 import { getStatisticsCardsData, getRoomPaymentStatusPieChartData } from "@/controllers/dashboard-controller";
-import Chart from "react-apexcharts";
 
 export function Home() {
   const [statisticsCardsData, setStatisticsCardsData] = useState([]);
