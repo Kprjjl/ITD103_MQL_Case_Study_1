@@ -7,7 +7,6 @@ export const fetchRegistrations = async () => {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-    console.log("response.data", response.data)
     return response.data;
   } catch (error) {
     console.error("Error fetching registrations:", error);
@@ -53,3 +52,16 @@ export const fetchSalesStatistics = async () => {
     console.error("Error fetching sales statistics:", error);
   }
 };
+
+export const fetchRoomPaymentStatusCounts = async () => {
+  try {
+    const response = await axios.get("http://localhost:3001/room-payment-status-counts", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching room payment statuses:", error);
+  }
+}

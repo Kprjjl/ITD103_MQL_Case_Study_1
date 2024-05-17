@@ -65,7 +65,20 @@ router.get('/sales-statistics', requireAdmin, async (req, res) => {
 // -------------------------------------------------------------
 
 // --------------------------- CHARTS ---------------------------
-
+// room payment status details (exclude vacant rooms) response format should be liek this: { paid: 10, unpaid: 5, partiallyPaid: 3, overdue: 2 }
+router.get('/room-payment-status-counts', requireAdmin, async (req, res) => {
+    try {
+        const rooms = await RoomModel.find({ 'lease.tenants': { $ne: [] } });
+        const paid = rooms.filter(room => room.lease.payment_status === 'paid').length;
+        const unpaid = rooms.filter(room => room.lease.payment_status === 'unpaid').length;
+        const partiallyPaid = rooms.filter(room => room.lease.payment_status === 'partially paid').length;
+        const overdue = rooms.filter(room => room.lease.payment_status === 'overdue').length;
+        res.status(200).json({ paid, unpaid, partiallyPaid, overdue });
+    } catch (error) {
+        console.error('Error retrieving room payment status:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 // --------------------------------------------------------------
 

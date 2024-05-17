@@ -7,6 +7,7 @@ const registerRoutes = require('./routes/registerRoutes');
 const userRoutes = require('./routes/userRoutes');
 const roomRoutes = require('./routes/roomRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 require('./utils/cleanupUtils');
 
 const app = express();
@@ -23,3 +24,4 @@ app.use(registerRoutes);
 app.use(userRoutes);
 app.use(roomRoutes);
 app.use(paymentRoutes);
+app.use(dashboardRoutes);
