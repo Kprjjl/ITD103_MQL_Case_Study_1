@@ -19,7 +19,6 @@ const RegistrationModel = require('../models/Registration');
 // total number of users
 // just use existing /users route
 
-// sales this year and last year (for comparison) response format should be like this: { thisYear: 10000, lastYear: 9000 }
 router.get('/sales-statistics', requireAdmin, async (req, res) => {
     try {
         const thisYear = await PaymentModel.aggregate([
@@ -65,7 +64,6 @@ router.get('/sales-statistics', requireAdmin, async (req, res) => {
 // -------------------------------------------------------------
 
 // --------------------------- CHARTS ---------------------------
-// room payment status details (exclude vacant rooms) response format should be like this: { paid: 10, unpaid: 5, partiallyPaid: 3, overdue: 2 }
 router.get('/room-payment-status-counts', requireAdmin, async (req, res) => {
     try {
         const rooms = await RoomModel.find({ 'lease.tenants': { $ne: [] } });
@@ -76,6 +74,60 @@ router.get('/room-payment-status-counts', requireAdmin, async (req, res) => {
         res.status(200).json({ paid, unpaid, partiallyPaid, overdue });
     } catch (error) {
         console.error('Error retrieving room payment status:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.get('/payments-per-month', requireAdmin, async (req, res) => {
+    try {
+        const payments = await PaymentModel.aggregate([
+            {
+                $match: {
+                    created_at: {
+                        $gte: new Date(new Date().getFullYear(), 0, 1),
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: { $month: '$created_at' },
+                    total: { $sum: '$amount' },
+                },
+            },
+            {
+                $sort: { _id: 1 },
+            },
+        ]);
+        res.status(200).json(payments.map(payment => payment.total));
+    } catch (error) {
+        console.error('Error retrieving payments per month:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.get('/payments-per-year', requireAdmin, async (req, res) => {
+    try {
+        const payments = await PaymentModel.aggregate([
+            {
+                $match: {
+                    created_at: {
+                        $gte: new Date(new Date().getFullYear() - 4, 0, 1),
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: { $year: '$created_at' },
+                    total: { $sum: '$amount' },
+                },
+            },
+            {
+                $sort: { _id: 1 },
+            },
+        ]);
+        res.status(200).json(payments.map(payment => payment.total));
+    } catch (error) {
+        console.error('Error retrieving payments per year:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

@@ -12,6 +12,8 @@ export class PieChart extends Component {
     super(props);
 
     this.state = {
+      width: this.props.width,
+      height: this.props.height,
       series: this.props.data,
       options: {
         chart: {
@@ -19,9 +21,6 @@ export class PieChart extends Component {
             show: false,
           },
         },
-        // title: {
-        //   text: this.props.title,
-        // },
         dataLabels: {
           enabled: true,
         },
@@ -48,8 +47,8 @@ export class PieChart extends Component {
           <div>
           <Chart
             type="pie"
-            width={this.props.width}
-            height={this.props.height}
+            width={this.state.width}
+            height={this.state.height}
             series={this.state.series}
             options={this.state.options}
           />

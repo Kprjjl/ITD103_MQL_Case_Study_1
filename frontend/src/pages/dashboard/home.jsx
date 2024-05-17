@@ -27,11 +27,12 @@ import {
 } from "@/data";
 import { CheckCircleIcon, ClockIcon } from "@heroicons/react/24/solid";
 import { useState, useEffect } from "react";
-import { getStatisticsCardsData, getRoomPaymentStatusPieChartData } from "@/controllers/dashboard-controller";
+import { getStatisticsCardsData, getRoomPaymentStatusPieChartData, getPaymentsChartData } from "@/controllers/dashboard-controller";
 
 export function Home() {
   const [statisticsCardsData, setStatisticsCardsData] = useState([]);
   const [roomPaymentStatusPieChartData, setRoomPaymentStatusPieChartData] = useState([]);
+  const [paymentChartsData, setPaymentChartsData] = useState([]);
 
   useEffect(() => {
     getStatisticsCardsData().then((data) => {
@@ -40,6 +41,10 @@ export function Home() {
 
     getRoomPaymentStatusPieChartData().then((data) => {
       setRoomPaymentStatusPieChartData(data);
+    });
+
+    getPaymentsChartData().then((data) => {
+      setPaymentChartsData(data);
     });
   }, []);
 
@@ -63,32 +68,23 @@ export function Home() {
           />
         ))}
       </div>
-      <div className="mb-6 flex justify-center">
-        <PieChart
-          data={roomPaymentStatusPieChartData.data}
-          width={400}
-          height={400}
-          colors={roomPaymentStatusPieChartData.colors}
-          showLegend={true}
-          title="Room Payment Statuses"
-          labels={roomPaymentStatusPieChartData.labels}
-        />
-        <div></div>
-      </div>
       <div className="mb-6 grid grid-cols-1 gap-y-12 gap-x-6 md:grid-cols-2 xl:grid-cols-3">
-        {statisticsChartsData.map((props) => (
+        {roomPaymentStatusPieChartData.data && (
+          <PieChart
+            cardClassName="border border-blue-gray-100 shadow-sm"
+            data={roomPaymentStatusPieChartData.data}
+            width={400}
+            height={400}
+            colors={roomPaymentStatusPieChartData.colors}
+            showLegend={true}
+            title="Room Payment Statuses"
+            labels={roomPaymentStatusPieChartData.labels}
+          />
+        )}
+        {paymentChartsData.map((props) => (
           <StatisticsChart
             key={props.title}
             {...props}
-            footer={
-              <Typography
-                variant="small"
-                className="flex items-center font-normal text-blue-gray-600"
-              >
-                <ClockIcon strokeWidth={2} className="h-4 w-4 text-blue-gray-400" />
-                &nbsp;{props.footer}
-              </Typography>
-            }
           />
         ))}
       </div>

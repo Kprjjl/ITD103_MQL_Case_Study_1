@@ -64,4 +64,30 @@ export const fetchRoomPaymentStatusCounts = async () => {
   } catch (error) {
     console.error("Error fetching room payment statuses:", error);
   }
-}
+};
+
+export const fetchPaymentsPerMonth = async () => {
+  try {
+    const response = await axios.get("http://localhost:3001/payments-per-month", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching payments per month:", error);
+  }
+};
+
+export const fetchPaymentsPerYear = async () => {
+  try {
+    const response = await axios.get("http://localhost:3001/payments-per-year", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching payments per year:", error);
+  }
+};

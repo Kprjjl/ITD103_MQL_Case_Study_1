@@ -81,7 +81,6 @@ export function Payments() {
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
       const newPayment = response.data;
-      console.log("new payment: ", newPayment)
       setPayments(prevPayments => [...prevPayments, newPayment]);
       reset_states();
       setShowPaymentPopup(0);

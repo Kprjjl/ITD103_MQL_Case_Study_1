@@ -13,7 +13,7 @@ cron.schedule('0 0 * * *', async () => {
 
 cron.schedule('* * * * *', async () => {
     try {
-        await updateLeasePaymentStatus();
+        await checkLeasePaymentStatuses();
         console.log('Lease payment status updated successfully');
     } catch (error) {
         console.error('Error updating lease payment status:', error);
@@ -25,7 +25,7 @@ async function cleanupStalePendingRegistrations() {
     await PendingReg.deleteMany({ date_created: { $lt: thresholdDate } });
 }
 
-async function updateLeasePaymentStatus(){
+async function checkLeasePaymentStatuses(){
     const rooms = await RoomModel.find({}).exec();
     for (let i = 0; i < rooms.length; i++) {
         const room = rooms[i];
@@ -51,11 +51,12 @@ async function updateLeasePaymentStatus(){
                 room.lease.payment_periods[i].payment_status = 'overdue';
             }
         }
+        room.markModified('lease.payment_periods');
         await room.save();
     }
 }
 
 module.exports = {
     cleanupStalePendingRegistrations,
-    updateLeasePaymentStatus
+    checkLeasePaymentStatuses,
 };
