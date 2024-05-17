@@ -21,8 +21,6 @@ export const getStatisticsCardsData = async () => {
 
   const num_online_tenants = tenants.filter(tenant => tenant.status === 'online').length;
   const num_pending_registrations = registrations.filter(registration => registration.status === 'pending').length;
-  console.log("rooms: ", rooms)
-  console.log("rooms[0].tenants: ", rooms[0].lease.tenants)
   const occupancy_percentage = rooms.filter(room => (room.tenants && room.tenants.length > 0)).length / rooms.length * 100;
   const salesYearComparisonPercentage = (salesStatistics.thisYear - salesStatistics.lastYear) / salesStatistics.lastYear * 100;
 
@@ -73,3 +71,18 @@ export const getStatisticsCardsData = async () => {
     },
   ];
 };
+
+export const getRoomPaymentStatusPieChartData = async () => {
+  const roomPaymentStatusCounts = await fetchRoomPaymentStatusCounts();
+
+  return {
+    labels: ["Paid", "Unpaid", "Partially Paid", "Overdue"],
+    data: [
+      roomPaymentStatusCounts.paid,
+      roomPaymentStatusCounts.unpaid,
+      roomPaymentStatusCounts.partiallyPaid,
+      roomPaymentStatusCounts.overdue,
+    ],
+    colors: ["#10B981", "#6B7280", "#F59E0B", "#EF4444"],
+  };
+}

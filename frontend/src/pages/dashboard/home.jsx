@@ -18,7 +18,7 @@ import {
   ArrowUpIcon,
 } from "@heroicons/react/24/outline";
 import { StatisticsCard } from "@/widgets/cards";
-import { StatisticsChart } from "@/widgets/charts";
+import { StatisticsChart, PieChart } from "@/widgets/charts";
 import { Example } from "@/widgets/charts";
 import {
   statisticsChartsData,
@@ -27,14 +27,20 @@ import {
 } from "@/data";
 import { CheckCircleIcon, ClockIcon } from "@heroicons/react/24/solid";
 import { useState, useEffect } from "react";
-import { getStatisticsCardsData } from "@/controllers/dashboard-controller";
+import { getStatisticsCardsData, getRoomPaymentStatusPieChartData } from "@/controllers/dashboard-controller";
+import Chart from "react-apexcharts";
 
 export function Home() {
   const [statisticsCardsData, setStatisticsCardsData] = useState([]);
+  const [roomPaymentStatusPieChartData, setRoomPaymentStatusPieChartData] = useState([]);
 
   useEffect(() => {
     getStatisticsCardsData().then((data) => {
       setStatisticsCardsData(data);
+    });
+
+    getRoomPaymentStatusPieChartData().then((data) => {
+      setRoomPaymentStatusPieChartData(data);
     });
   }, []);
 
@@ -58,8 +64,18 @@ export function Home() {
           />
         ))}
       </div>
-      <div>
-        <Example /></div>
+      <div className="mb-6 flex justify-center">
+        <PieChart
+          data={roomPaymentStatusPieChartData.data}
+          width={400}
+          height={400}
+          colors={roomPaymentStatusPieChartData.colors}
+          showLegend={true}
+          title="Room Payment Statuses"
+          labels={roomPaymentStatusPieChartData.labels}
+        />
+        <div></div>
+      </div>
       <div className="mb-6 grid grid-cols-1 gap-y-12 gap-x-6 md:grid-cols-2 xl:grid-cols-3">
         {statisticsChartsData.map((props) => (
           <StatisticsChart

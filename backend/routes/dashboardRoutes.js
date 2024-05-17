@@ -65,7 +65,7 @@ router.get('/sales-statistics', requireAdmin, async (req, res) => {
 // -------------------------------------------------------------
 
 // --------------------------- CHARTS ---------------------------
-// room payment status details (exclude vacant rooms) response format should be liek this: { paid: 10, unpaid: 5, partiallyPaid: 3, overdue: 2 }
+// room payment status details (exclude vacant rooms) response format should be like this: { paid: 10, unpaid: 5, partiallyPaid: 3, overdue: 2 }
 router.get('/room-payment-status-counts', requireAdmin, async (req, res) => {
     try {
         const rooms = await RoomModel.find({ 'lease.tenants': { $ne: [] } });
