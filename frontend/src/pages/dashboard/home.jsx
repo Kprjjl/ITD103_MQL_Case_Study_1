@@ -37,6 +37,8 @@ export function Home() {
       setRoomPaymentStatusPieChartData(data);
     });
 
+    console.log("roomPaymentStatusPieChartData", roomPaymentStatusPieChartData)
+
     getPaymentsChartData().then((data) => {
       setPaymentChartsData(data);
     });
@@ -80,9 +82,6 @@ export function Home() {
           {paymentChartsData.perMonth && (
             <Card className="border border-blue-gray-100 shadow-sm">
               <CardHeader floated={false} shadow={false} color="transparent" className="m-0 p-6">
-                {/* <Typography variant="h6" color="blue-gray" className="mb-2">
-                  {paymentChartsData.perMonth.title}
-                </Typography> */}
               </CardHeader>
               <CardBody className="pt-0">
                 <HighchartsReact
@@ -110,9 +109,6 @@ export function Home() {
           {paymentChartsData.perYear && (
             <Card className="border border-blue-gray-100 shadow-sm">
               <CardHeader floated={false} shadow={false} color="transparent" className="m-0 p-6">
-                {/* <Typography variant="h6" color="blue-gray" className="mb-2">
-                  {paymentChartsData.perYear.title}
-                </Typography> */}
               </CardHeader>
               <CardBody className="pt-0">
                 <HighchartsReact

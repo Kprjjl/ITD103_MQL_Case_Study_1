@@ -76,6 +76,7 @@ export const getStatisticsCardsData = async () => {
 
 export const getRoomPaymentStatusPieChartData = async () => {
   const roomPaymentStatusCounts = await fetchRoomPaymentStatusCounts();
+  console.log("roomPaymentStatusCounts", roomPaymentStatusCounts)
   if (!roomPaymentStatusCounts) return {};
 
   return {
