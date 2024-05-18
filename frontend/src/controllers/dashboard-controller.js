@@ -76,6 +76,7 @@ export const getStatisticsCardsData = async () => {
 
 export const getRoomPaymentStatusPieChartData = async () => {
   const roomPaymentStatusCounts = await fetchRoomPaymentStatusCounts();
+  if (!roomPaymentStatusCounts) return {};
 
   return {
     labels: ["Paid", "Unpaid", "Partially Paid", "Overdue"],

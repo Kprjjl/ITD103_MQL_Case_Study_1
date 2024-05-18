@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { Link, NavLink } from "react-router-dom";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, HomeIcon } from "@heroicons/react/24/outline";
 import {
   Avatar,
   Button,
@@ -21,6 +21,11 @@ export function Sidenav({ brandImg, brandName, routes }) {
   routes = routes.filter((route) => !route.hidden);
   if (userType !== "admin") {
     routes = routes.filter((route) => route.title !== "management");
+  } else {
+    routes = routes.map((route) => {
+      route.pages = route.pages.filter((page) => page.name !== "profile");
+      return route;
+    });
   }
 
   return (
@@ -32,14 +37,17 @@ export function Sidenav({ brandImg, brandName, routes }) {
       <div
         className={`relative`}
       >
-        <Link to="/" className="py-6 px-8 text-center">
-          <Typography
-            variant="h6"
-            color={sidenavType === "dark" ? "white" : "blue-gray"}
-          >
-            {brandName}
-          </Typography>
-        </Link>
+        <div className="py-6 px-8 flex items-center justify-center p-4 gap-2">
+          <HomeIcon className="h-8 w-8 text-black" />
+          <Link to="/" className="text-center">
+            <Typography
+              variant="h5"
+              color={sidenavType === "dark" ? "white" : "blue-gray"}
+            >
+              {brandName}
+            </Typography>
+          </Link>
+        </div>
         <IconButton
           variant="text"
           color="white"

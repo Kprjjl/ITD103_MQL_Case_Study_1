@@ -93,4 +93,15 @@ router.delete('/users/:id', requireAdmin, async (req, res) => {
     }
 });
 
+router.get('/users/me', async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.user.id
+            , '-password -usertype -created_at -__v').exec();
+        res.status(200).json(user);
+    } catch (error) {
+        console.error('Error fetching profile:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 module.exports = router;
