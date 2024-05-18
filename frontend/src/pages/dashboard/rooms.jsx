@@ -32,6 +32,7 @@ export function Rooms() {
   const [num_terms, setNumTerms] = useState(1);
   const [end_date, setEndDate] = useState(null);
   const payment_freq_enum = ['monthly', 'quarterly', 'semi-annually', 'annually', 'one-time'];
+  const [roomSearch, setRoomSearch] = useState("");
 
   useEffect(() => {
     fetchRooms().then((data) => {
@@ -162,13 +163,14 @@ export function Rooms() {
           </div>
         </div>
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <div></div>
           <div className="w-full md:w-72">
             <Input
-              label="Search"
+              label="Search Room"
               icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+              onChange={(e) => setRoomSearch(e.target.value)}
             />
           </div>
+          <div></div>
         </div>
       </CardHeader>
         <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
@@ -193,7 +195,7 @@ export function Rooms() {
               </tr>
             </thead>
             <tbody>
-              {rooms.map(
+              {rooms.filter(item => (item.name.includes(roomSearch))).map(
                 ({ _id, name, details, lease, tenants }, key) => {
                   const payment_status = lease ? lease.payment_status : '-----------';
                   const PAYMENT_STATUS_COLORS = {

@@ -76,7 +76,6 @@ export const getStatisticsCardsData = async () => {
 
 export const getRoomPaymentStatusPieChartData = async () => {
   const roomPaymentStatusCounts = await fetchRoomPaymentStatusCounts();
-  console.log("roomPaymentStatusCounts", roomPaymentStatusCounts)
   if (!roomPaymentStatusCounts) return {};
 
   return {
@@ -102,6 +101,7 @@ export const getPaymentsChartData = async () => {
   
   const currentYear = new Date().getFullYear();
   const yearLabels = Array.from({ length: 5 }, (_, index) => currentYear - 4 + index);
+  const reversedYearLabels = yearLabels.slice().reverse();
 
   return {
     perMonth: {
@@ -110,7 +110,7 @@ export const getPaymentsChartData = async () => {
       title: "Payments Per Month",
     },
     perYear: {
-      labels: yearLabels,
+      labels: reversedYearLabels,
       data: paymentsPerYear,
       title: "Payments Per Year",
     }

@@ -32,6 +32,8 @@ export function Payments() {
   const [date, setDate] = useState(Date.now);
   const [rooms, setRooms] = useState([]);
   const [tenants, setTenants] = useState([]);
+  const [searchTenant, setSearchTenant] = useState("");
+  const [totalPayments, setTotalPayments] = useState(0);
 
   useEffect(() => {
     const fetchPayments = async () => {
@@ -157,13 +159,21 @@ export function Payments() {
             </div>
           </div>
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <div></div>
             <div className="w-full md:w-72">
               <Input
-                label="Search"
+                label="Search User"
                 icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                onChange={(e) => {
+                  setSearchTenant(e.target.value);
+                  const total = payments.filter(item => (item.paid_by.username.includes(e.target.value))).reduce((acc, curr) => acc + curr.amount, 0);
+                  setTotalPayments(total);
+                }}
               />
             </div>
+              <Typography variant="small" color="blue-gray" className="mt-2 w-96 text-s font-medium text-blue-gray-800">
+                Total Payments: ₱{totalPayments.toLocaleString()}
+              </Typography>
+            <div className="w-full"></div>
           </div>
         </CardHeader>
         <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
@@ -188,7 +198,7 @@ export function Payments() {
               </tr>
             </thead>
             <tbody>
-              {payments.map(
+              {payments.filter(item => (item.paid_by.username.includes(searchTenant))).map(
                 ({ _id, amount: _amount, paid_by: user, room: _room, date: _date }, key) => {
                   const name = `${user.firstname} ${user.lastname}`;
                   const className = `py-3 px-5 ${
@@ -211,7 +221,7 @@ export function Payments() {
                         </div>
                       </td>
                       <td className={className}>
-                        {room && (
+                        {_room && (
                           <Typography variant="small" color="blue-gray" className="text-ss font-medium text-blue-gray-600">
                             {_room.name}
                           </Typography>
