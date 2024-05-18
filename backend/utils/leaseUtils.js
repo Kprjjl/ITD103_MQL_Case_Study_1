@@ -1,5 +1,5 @@
 // const LeaseModel = require('../models/Lease');
-// const { updateLeasePaymentStatus } = require('../models/Payment');
+const RoomModel = require('../models/Room');
 
 
 function generatePaymentPeriods(lease) {
@@ -36,10 +36,74 @@ function generatePaymentPeriods(lease) {
         });
         currentDate = new Date(end_date.getTime() + 60 * 60 * 24 * 1000);
     }
-    // updateLeasePaymentStatus(_id);
     return payment_periods;
 }
 
+async function updateLeasePaymentStatusAmount(roomId, amount, isDelete=false) {
+    const amount_payment = isDelete ? amount : -amount;
+    const room = await RoomModel.findByIdAndUpdate(
+        { _id: roomId }, {
+            $inc: {
+                'lease.payment_periods.$[element].payments_until_paid': amount_payment
+            }
+        }, {
+            arrayFilters: [{
+                'element.start_date': { $lte: new Date() },
+                'element.end_date': { $gte: new Date() }
+            }],
+            new: true
+        }).exec();
+    if (!room) {
+        throw new Error('Room not found');
+    }
+    await updateLeasePaymentStatus(room, mode=(isDelete ? "delete" : "add"));
+}
+
+async function updateLeasePaymentStatus(roomId, amount, isDelete=false) {
+    const room = await RoomModel.findById(roomId).exec();
+    if (!room) {
+        throw new Error('Room not found');
+    }
+    let total_payments = 0;
+    for (let i = 0; i < room.lease.payment_periods.length; i++) {
+        total_payments += (room.lease.payment_periods[i].rent_amount - room.lease.payment_periods[i].payments_until_paid);
+    }
+    room.lease.payment_periods = generatePaymentPeriods(room.lease);
+
+    let lease_payment_status = "unpaid";
+    let carry_over =  (isDelete? (total_payments - amount) : (amount + total_payments));
+    for (let i = 0; i < room.lease.payment_periods.length; i++) {
+        if (carry_over > 0 && room.lease.payment_periods[i].payments_until_paid > 0) {
+            if (room.lease.payment_periods[i].payments_until_paid >= carry_over) {
+                room.lease.payment_periods[i].payments_until_paid -= carry_over;
+                carry_over = 0;
+            } else {
+                carry_over -= room.lease.payment_periods[i].payments_until_paid;
+                room.lease.payment_periods[i].payments_until_paid = 0;
+            }
+        }
+        if (room.lease.payment_periods[i].payments_until_paid <= 0) {
+            room.lease.payment_periods[i].payment_status = 'paid';
+        } else if (room.lease.payment_periods[i].payments_until_paid < room.lease.payment_periods[i].rent_amount) {
+            room.lease.payment_periods[i].payment_status = 'partially paid';
+        } else if (room.lease.payment_periods[i].end_date < new Date()) {
+            room.lease.payment_periods[i].payment_status = 'overdue';
+        }
+
+        if (room.lease.payment_periods[i].start_date <= new Date() && room.lease.payment_periods[i].end_date >= new Date()) {
+            lease_payment_status = room.lease.payment_periods[i].payment_status;
+        }
+    }
+
+    room.lease.payment_status = lease_payment_status;
+    room.markModified('lease.payment_periods');
+
+    await room.save();
+}
+
+
 module.exports = {
-    generatePaymentPeriods
+    generatePaymentPeriods,
+    updateLeasePaymentStatusAmount,
+    updateLeasePaymentStatus,
 };

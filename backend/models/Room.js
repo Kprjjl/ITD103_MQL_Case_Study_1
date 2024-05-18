@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { generatePaymentPeriods } = require('../utils/leaseUtils');
 
 
 const PaymentPeriodSchema = new mongoose.Schema({
