@@ -7,11 +7,16 @@ import {
   Configurator,
 } from "@/widgets/layout";
 import routes from "@/routes";
-import { useMaterialTailwindController, setOpenConfigurator } from "@/context";
+import { useMaterialTailwindController, setOpenConfigurator, setFixedNavbar } from "@/context";
+import { useEffect } from "react";
 
 export function Dashboard() {
   const [controller, dispatch] = useMaterialTailwindController();
   const { sidenavType } = controller;
+
+  useEffect(() => {
+    setFixedNavbar(dispatch, true);
+  }, []);
 
   return (
     <div className="min-h-screen bg-blue-gray-50/50">
@@ -24,7 +29,7 @@ export function Dashboard() {
       />
       <div className="p-4 xl:ml-80">
         <DashboardNavbar />
-        <Configurator />
+        {/* <Configurator /> */}
         <IconButton
           size="lg"
           color="white"

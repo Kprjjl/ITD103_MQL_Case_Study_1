@@ -201,13 +201,13 @@ export function DashboardNavbar() {
               </MenuItem>
             </MenuList>
           </Menu>
-          <IconButton
+          {/* <IconButton
             variant="text"
             color="blue-gray"
             onClick={() => setOpenConfigurator(dispatch, true)}
           >
             <Cog6ToothIcon className="h-5 w-5 text-blue-gray-500" />
-          </IconButton>
+          </IconButton> */}
           <Tooltip content="Logout">
             <IconButton variant="text" color="blue-gray" onClick={ handleLogout }>
               <i class="fa-solid fa-right-from-bracket text-blue-gray-500"></i>

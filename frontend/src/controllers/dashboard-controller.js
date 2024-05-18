@@ -56,7 +56,7 @@ export const getStatisticsCardsData = async () => {
       value: rooms.length,
       footer: {
         color: occupancy_percentage >= 50 ? "text-green-500" : "text-red-500",
-        value: `${occupancy_percentage}%`,
+        value: `${isNaN(occupancy_percentage)? 0 : occupancy_percentage}%`,
         label: "occupancy rate",
       },
     },
