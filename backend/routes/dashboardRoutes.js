@@ -67,6 +67,7 @@ router.get('/sales-statistics', requireAdmin, async (req, res) => {
 router.get('/room-payment-status-counts', requireAdmin, async (req, res) => {
     try {
         const rooms = await RoomModel.find({ 'lease.tenants': { $ne: [] } });
+        if (!rooms.lease) return res.status(200).json({ paid: 0, unpaid: 0, partiallyPaid: 0, overdue: 0 });
         const paid = rooms.filter(room => room.lease.payment_status === 'paid').length;
         const unpaid = rooms.filter(room => room.lease.payment_status === 'unpaid').length;
         const partiallyPaid = rooms.filter(room => room.lease.payment_status === 'partially paid').length;

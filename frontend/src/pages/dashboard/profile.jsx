@@ -59,7 +59,6 @@ export function Profile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Update user profile details
       await axios.put(
         'http://localhost:3001/users/me',
         profile,

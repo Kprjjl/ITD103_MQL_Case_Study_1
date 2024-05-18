@@ -9,8 +9,11 @@ import {
   IconButton,
 } from "@material-tailwind/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useMaterialTailwindController } from "@/context";
 
 export function Navbar({ brandName, routes, action }) {
+  const [controller, dispatch] = useMaterialTailwindController();
+  const { popupOpen } = controller;
   const [openNav, setOpenNav] = React.useState(false);
 
   React.useEffect(() => {
@@ -81,20 +84,6 @@ export function Navbar({ brandName, routes, action }) {
     </MTNavbar>
   );
 }
-
-Navbar.defaultProps = {
-  brandName: "Material Tailwind React",
-  action: (
-    <a
-      href="https://www.creative-tim.com/product/material-tailwind-dashboard-react"
-      target="_blank"
-    >
-      <Button variant="gradient" size="sm" fullWidth>
-        free download
-      </Button>
-    </a>
-  ),
-};
 
 Navbar.propTypes = {
   brandName: PropTypes.string,
