@@ -19,8 +19,11 @@ import { useState, useEffect } from "react";
 import { getStatisticsCardsData, getRoomPaymentStatusPieChartData, getPaymentsChartData } from "@/controllers/dashboard-controller";
 import HighchartsReact from 'highcharts-react-official';
 import Highcharts from 'highcharts';
+import { useMaterialTailwindController } from "@/context";
 
 export function Home() {
+  const [controller, dispatch] = useMaterialTailwindController();
+  const { userType } = controller;
   const [statisticsCardsData, setStatisticsCardsData] = useState([]);
   const [roomPaymentStatusPieChartData, setRoomPaymentStatusPieChartData] = useState([]);
   const [paymentChartsData, setPaymentChartsData] = useState([]);
@@ -59,81 +62,83 @@ export function Home() {
           />
         ))}
       </div>
-      <div className="mb-6 grid grid-cols-1 gap-y-12 gap-x-6 md:grid-cols-2 xl:grid-cols-3">
-        {roomPaymentStatusPieChartData.data && (
-          <PieChart
-            cardClassName="border border-blue-gray-100 shadow-sm"
-            data={roomPaymentStatusPieChartData.data}
-            width={400}
-            height={400}
-            colors={roomPaymentStatusPieChartData.colors}
-            showLegend={true}
-            legendPosition="bottom"
-            title="Room Payment Statuses"
-            labels={roomPaymentStatusPieChartData.labels}
-          />
-        )}
-        {paymentChartsData.perMonth && (
-          <Card className="border border-blue-gray-100 shadow-sm">
-            <CardHeader floated={false} shadow={false} color="transparent" className="m-0 p-6">
-              {/* <Typography variant="h6" color="blue-gray" className="mb-2">
-                {paymentChartsData.perMonth.title}
-              </Typography> */}
-            </CardHeader>
-            <CardBody className="pt-0">
-              <HighchartsReact
-                highcharts={Highcharts}
-                options={{
-                  chart: {
-                    type: 'line'
-                  },
-                  title: {
-                    text: paymentChartsData.perMonth.title
-                  },
-                  xAxis: {
-                    categories: paymentChartsData.perMonth.labels
-                  },
-                  series: [{
-                    name: 'Payments',
-                    data: paymentChartsData.perMonth.data,
-                    color: "#10B981"
-                  }]
-                }}
-              />
-            </CardBody>
-          </Card>
-        )}
-        {paymentChartsData.perYear && (
-          <Card className="border border-blue-gray-100 shadow-sm">
-            <CardHeader floated={false} shadow={false} color="transparent" className="m-0 p-6">
-              {/* <Typography variant="h6" color="blue-gray" className="mb-2">
-                {paymentChartsData.perYear.title}
-              </Typography> */}
-            </CardHeader>
-            <CardBody className="pt-0">
-              <HighchartsReact
-                highcharts={Highcharts}
-                options={{
-                  chart: {
-                    type: 'line'
-                  },
-                  title: {
-                    text: paymentChartsData.perYear.title
-                  },
-                  xAxis: {
-                    categories: paymentChartsData.perYear.labels
-                  },
-                  series: [{
-                    name: 'Payments',
-                    data: paymentChartsData.perYear.data,
-                    color: "#10B981"
-                  }]
-                }}
-              />
-            </CardBody>
-          </Card>
-        )}
-      </div>
+      {userType === "admin" && (
+        <div className="mb-6 grid grid-cols-1 gap-y-12 gap-x-6 md:grid-cols-2 xl:grid-cols-3">
+          {roomPaymentStatusPieChartData.data && (
+            <PieChart
+              cardClassName="border border-blue-gray-100 shadow-sm"
+              data={roomPaymentStatusPieChartData.data}
+              width={400}
+              height={400}
+              colors={roomPaymentStatusPieChartData.colors}
+              showLegend={true}
+              legendPosition="bottom"
+              title="Room Payment Statuses"
+              labels={roomPaymentStatusPieChartData.labels}
+            />
+          )}
+          {paymentChartsData.perMonth && (
+            <Card className="border border-blue-gray-100 shadow-sm">
+              <CardHeader floated={false} shadow={false} color="transparent" className="m-0 p-6">
+                {/* <Typography variant="h6" color="blue-gray" className="mb-2">
+                  {paymentChartsData.perMonth.title}
+                </Typography> */}
+              </CardHeader>
+              <CardBody className="pt-0">
+                <HighchartsReact
+                  highcharts={Highcharts}
+                  options={{
+                    chart: {
+                      type: 'line'
+                    },
+                    title: {
+                      text: paymentChartsData.perMonth.title
+                    },
+                    xAxis: {
+                      categories: paymentChartsData.perMonth.labels
+                    },
+                    series: [{
+                      name: 'Payments',
+                      data: paymentChartsData.perMonth.data,
+                      color: "#10B981"
+                    }]
+                  }}
+                />
+              </CardBody>
+            </Card>
+          )}
+          {paymentChartsData.perYear && (
+            <Card className="border border-blue-gray-100 shadow-sm">
+              <CardHeader floated={false} shadow={false} color="transparent" className="m-0 p-6">
+                {/* <Typography variant="h6" color="blue-gray" className="mb-2">
+                  {paymentChartsData.perYear.title}
+                </Typography> */}
+              </CardHeader>
+              <CardBody className="pt-0">
+                <HighchartsReact
+                  highcharts={Highcharts}
+                  options={{
+                    chart: {
+                      type: 'line'
+                    },
+                    title: {
+                      text: paymentChartsData.perYear.title
+                    },
+                    xAxis: {
+                      categories: paymentChartsData.perYear.labels
+                    },
+                    series: [{
+                      name: 'Payments',
+                      data: paymentChartsData.perYear.data,
+                      color: "#10B981"
+                    }]
+                  }}
+                />
+              </CardBody>
+            </Card>
+          )}
+        </div>
+      )}
     </div>
   );
 }
